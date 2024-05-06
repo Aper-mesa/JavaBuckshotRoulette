@@ -1,6 +1,10 @@
 package Components;
 
 public class BallComponent extends Component {
-    int amount;
+    public int amount;
     static final int MAX = 4;
+
+    public String toString() {
+        return "BALL";
+    }
 }

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Stack;
 
-public class AmmoSystem {
+public class AmmoSystem extends EntitySystem {
     private int ballAmount;
     private int blankAmount;
     private int totalAmount;
@@ -17,13 +17,15 @@ public class AmmoSystem {
     Random r = new Random();
 
     public AmmoSystem(int totalAmount) {
-        nextRound(totalAmount);
+        reload(totalAmount);
     }
 
-    public void nextRound(int totalAmount) {
+    public void reload(int totalAmount) {
+        System.out.println("\t\t\tSHOTGUN RELOADED");
         this.totalAmount = totalAmount;
-        ballAmount = r.nextInt(totalAmount) + 1;
+        ballAmount = r.nextInt(totalAmount - 1) + 1;
         blankAmount = totalAmount - ballAmount;
+        chamber.clear();
         for (int i = 0; i < ballAmount; i++) {
             chamber.push(new BallComponent());
         }
@@ -31,9 +33,16 @@ public class AmmoSystem {
             chamber.push(new BlankComponent());
         }
         Collections.shuffle(chamber);
-        System.out.println("*****");
-        System.out.println(Arrays.toString(chamber.toArray()));
-        System.out.println("*****.");
+        printChamber();
+    }
+
+    //for testing only
+    public void printChamber() {
+        System.out.println("\t\t\t" + Arrays.toString(chamber.toArray()));
+    }
+
+    public boolean noBullet() {
+        return chamber.isEmpty();
     }
 
     public int getTotalAmount() {
