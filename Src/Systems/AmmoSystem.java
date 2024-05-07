@@ -55,4 +55,8 @@ public class AmmoSystem extends EntitySystem {
         return chamber.pop();
     }
 
+    public Component checkBullet() {
+        return chamber.peek();
+    }
+
 }

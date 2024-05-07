@@ -1,9 +1,6 @@
 package Systems;
 
-import Components.BeerComponent;
-import Components.BlankComponent;
-import Components.CigaretteComponent;
-import Components.Component;
+import Components.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +17,7 @@ public class PropSystem extends EntitySystem {
     public PropSystem() {
         allPropsClasses.add(BeerComponent.class);
         allPropsClasses.add(CigaretteComponent.class);
+        allPropsClasses.add(MagnifierComponent.class);
     }
 
     public void beer(Engine engine) {
@@ -37,9 +35,22 @@ public class PropSystem extends EntitySystem {
         if (turnSystem.isPlayerTurn()) {
             PersonSystem player = (PersonSystem) engine.getSystem(PersonSystem.class);
             if (player.isWounded()) player.incrementHealth();
-        } else {
+        } else if (turnSystem.isDealerTurn()) {
             PersonSystem dealer = (PersonSystem) engine.getSystem(PersonSystem.class);
             if (dealer.isWounded()) dealer.incrementHealth();
+        }
+    }
+
+    public void magnifier(Engine engine) {
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        if (turnSystem.isPlayerTurn()) {
+            AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
+            Component bullet = ammoSystem.checkBullet();
+            if (bullet instanceof BlankComponent) {
+                System.out.println("BLANK");
+            } else {
+                System.out.println("BALL");
+            }
         }
     }
 
@@ -61,6 +72,8 @@ public class PropSystem extends EntitySystem {
             beer(engine);
         } else if (prop instanceof CigaretteComponent) {
             cigarette(engine);
+        } else if (prop instanceof MagnifierComponent) {
+            magnifier(engine);
         }
     }
 
