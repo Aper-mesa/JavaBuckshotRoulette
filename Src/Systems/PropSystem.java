@@ -13,17 +13,20 @@ public class PropSystem extends EntitySystem {
     ArrayList<Component> dealerProps = new ArrayList<>(8);
     ArrayList<Component> playerProps = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
+    Engine engine;
 
-    public PropSystem() {
+    public PropSystem(Engine engine) {
+        this.engine = engine;
         allPropsClasses.add(BeerComponent.class);
         allPropsClasses.add(CigaretteComponent.class);
         allPropsClasses.add(MagnifierComponent.class);
         allPropsClasses.add(HandsawComponent.class);
         allPropsClasses.add(ConverterComponent.class);
         allPropsClasses.add(PhoneComponent.class);
+        allPropsClasses.add(Adrenaline.class);
     }
 
-    public void beer(Engine engine) {
+    public void beer() {
         AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         Component bullet = ammoSystem.nextBullet();
         if (bullet instanceof BlankComponent) {
@@ -33,7 +36,7 @@ public class PropSystem extends EntitySystem {
         }
     }
 
-    public void cigarette(Engine engine) {
+    public void cigarette() {
         TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         if (turnSystem.isPlayerTurn()) {
             PersonSystem player = (PersonSystem) engine.getSystem(PersonSystem.class);
@@ -44,7 +47,7 @@ public class PropSystem extends EntitySystem {
         }
     }
 
-    public void magnifier(Engine engine) {
+    public void magnifier() {
         TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         if (turnSystem.isPlayerTurn()) {
             AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
@@ -57,7 +60,7 @@ public class PropSystem extends EntitySystem {
         }
     }
 
-    public void phone(Engine engine) {
+    public void phone() {
         TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         if (turnSystem.isPlayerTurn()) {
@@ -73,14 +76,29 @@ public class PropSystem extends EntitySystem {
         }
     }
 
-    public void converter(Engine engine) {
+    public void converter() {
         AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         ammoSystem.convertCurrentBullet();
     }
 
-    public void handsaw(Engine engine) {
+    public void handsaw() {
         ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
         shotgunSystem.sawBarrel();
+    }
+
+    public void adrenaline() {
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        if (turnSystem.isPlayerTurn()) {
+            System.out.println("TYPE INDEX TO STEAL");
+            int choice = Integer.parseInt(engine.input.nextLine()) - 1;
+            stealPropByIndex(choice, turnSystem);
+        }
+    }
+
+    public void stealPropByIndex(int index, TurnSystem turnSystem) {
+        if (turnSystem.isPlayerTurn()) {
+            playerProps.add(dealerProps.remove(index));
+        }
     }
 
     public void showProps() {
@@ -88,7 +106,7 @@ public class PropSystem extends EntitySystem {
         System.out.println(" YOUR  PROPS" + playerProps.toString());
     }
 
-    public void usePropByIndex(int index, Engine engine, TurnSystem turnSystem) {
+    public void usePropByIndex(int index, TurnSystem turnSystem) {
         Component prop;
         if (turnSystem.isDealerTurn()) {
             prop = dealerProps.get(index);
@@ -98,17 +116,19 @@ public class PropSystem extends EntitySystem {
             playerProps.remove(index);
         }
         if (prop instanceof BeerComponent) {
-            beer(engine);
+            beer();
         } else if (prop instanceof CigaretteComponent) {
-            cigarette(engine);
+            cigarette();
         } else if (prop instanceof MagnifierComponent) {
-            magnifier(engine);
+            magnifier();
         } else if (prop instanceof HandsawComponent) {
-            handsaw(engine);
+            handsaw();
         } else if (prop instanceof ConverterComponent) {
-            converter(engine);
+            converter();
         } else if (prop instanceof PhoneComponent) {
-            phone(engine);
+            phone();
+        } else if (prop instanceof Adrenaline) {
+            adrenaline();
         }
     }
 

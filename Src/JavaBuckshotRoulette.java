@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 public class JavaBuckshotRoulette {
     Random r = new Random();
-    Scanner input = new Scanner(System.in);
     int initialHealth;
     String playerName;
     AmmoSystem ammoSystem;
@@ -16,8 +15,8 @@ public class JavaBuckshotRoulette {
     PersonSystem personSystem;
     TurnSystem turnSystem;
     RoundSystem roundSystem;
-    PropSystem propSystem = new PropSystem();
     Engine engine = new Engine();
+    PropSystem propSystem = new PropSystem(engine);
     ShotgunSystem shotgunSystem = new ShotgunSystem();
 
     public JavaBuckshotRoulette() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
@@ -48,7 +47,7 @@ public class JavaBuckshotRoulette {
 
     private void setPlayerName() {
         System.out.println("ENTER YOUR NAME");
-        playerName = input.nextLine().toUpperCase();
+        playerName = engine.input.nextLine().toUpperCase();
     }
 
     private void addPeople() {
@@ -138,7 +137,7 @@ public class JavaBuckshotRoulette {
                 \t\t\tTYPE 1 TO SHOOT THE DEALER
                 \t\t\tTYPE 2 TO SHOOT YOURSELF
                 \t\t\tTYPE 3 TO USE PROPS""");
-        String command = input.nextLine();
+        String command = engine.input.nextLine();
         switch (command) {
             case "1" -> shootDealer();
             case "2" -> shootPlayer();
@@ -187,8 +186,8 @@ public class JavaBuckshotRoulette {
 
     private void useProps() {
         System.out.println("TYPE INDEX TO USE CORRESPONDING PROPS");
-        int choice = Integer.parseInt(input.nextLine()) - 1;
-        propSystem.usePropByIndex(choice, engine, turnSystem);
+        int choice = Integer.parseInt(engine.input.nextLine()) - 1;
+        propSystem.usePropByIndex(choice, turnSystem);
     }
 
     private void printBlankBullet() {
