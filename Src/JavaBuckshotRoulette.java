@@ -2,11 +2,8 @@ import Components.*;
 import Systems.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
-import java.util.Scanner;
 
 public class JavaBuckshotRoulette {
-    Random r = new Random();
     int initialHealth;
     String playerName;
     AmmoSystem ammoSystem;
@@ -41,7 +38,7 @@ public class JavaBuckshotRoulette {
     }
 
     private void setInitialHealth() {
-        initialHealth = r.nextInt(3) + 2;
+        initialHealth = engine.rand.nextInt(3) + 2;
         personSystem.setHealth(initialHealth);
     }
 
@@ -70,7 +67,7 @@ public class JavaBuckshotRoulette {
     }
 
     private void addAmmoSystem() {
-        int initialAmmo = r.nextInt(7) + 2;
+        int initialAmmo = engine.rand.nextInt(7) + 2;
         ammoSystem = new AmmoSystem(initialAmmo);
         printChamber();
     }
@@ -94,7 +91,7 @@ public class JavaBuckshotRoulette {
             }
             if (ammoSystem.noBullet()) {
                 System.out.println("\t\t\t--------------");
-                ammoSystem.reload(r.nextInt(7) + 2);
+                ammoSystem.reload(engine.rand.nextInt(7) + 2);
                 turnSystem.playerTurn();
                 personSystem.printHealth();
                 printChamber();
@@ -122,7 +119,7 @@ public class JavaBuckshotRoulette {
     private void nextRound() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         roundSystem.nextRound();
         System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
-        ammoSystem.reload(r.nextInt(7) + 2);
+        ammoSystem.reload(engine.rand.nextInt(7) + 2);
         turnSystem.playerTurn();
         setInitialHealth();
         personSystem.printHealth();
@@ -167,7 +164,7 @@ public class JavaBuckshotRoulette {
         }
         System.out.println("BOOM!");
         turnSystem.dealerTurn();
-        personSystem.decrementHealth();
+        personSystem.harm();
     }
 
     private void shootPlayer() {
@@ -181,7 +178,7 @@ public class JavaBuckshotRoulette {
         }
         System.out.println("BOOM!");
         turnSystem.playerTurn();
-        personSystem.decrementHealth();
+        personSystem.harm();
     }
 
     private void useProps() {

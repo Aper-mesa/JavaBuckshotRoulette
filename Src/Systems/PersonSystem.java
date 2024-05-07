@@ -16,7 +16,7 @@ public class PersonSystem extends EntitySystem {
         this.engine = engine;
     }
 
-    public void incrementHealth() {
+    public void heal() {
         HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
                 (HealthComponent) player.getComponent(HealthComponent.class)
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);
@@ -24,7 +24,7 @@ public class PersonSystem extends EntitySystem {
             healthComponent.setAmount(healthComponent.getAmount() + 1);
     }
 
-    public void decrementHealth() {
+    public void harm() {
         HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
                 (HealthComponent) player.getComponent(HealthComponent.class)
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);

@@ -6,10 +6,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 public class PropSystem extends EntitySystem {
-    Random r = new Random();
     ArrayList<Component> dealerProps = new ArrayList<>(8);
     ArrayList<Component> playerProps = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
@@ -24,6 +22,7 @@ public class PropSystem extends EntitySystem {
         allPropsClasses.add(ConverterComponent.class);
         allPropsClasses.add(PhoneComponent.class);
         allPropsClasses.add(Adrenaline.class);
+        allPropsClasses.add(MedicineComponent.class);
     }
 
     public void beer() {
@@ -40,10 +39,10 @@ public class PropSystem extends EntitySystem {
         TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         if (turnSystem.isPlayerTurn()) {
             PersonSystem player = (PersonSystem) engine.getSystem(PersonSystem.class);
-            if (player.isWounded()) player.incrementHealth();
+            if (player.isWounded()) player.heal();
         } else if (turnSystem.isDealerTurn()) {
             PersonSystem dealer = (PersonSystem) engine.getSystem(PersonSystem.class);
-            if (dealer.isWounded()) dealer.incrementHealth();
+            if (dealer.isWounded()) dealer.heal();
         }
     }
 
@@ -65,7 +64,7 @@ public class PropSystem extends EntitySystem {
         AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         if (turnSystem.isPlayerTurn()) {
             int totalAmount = ammoSystem.getTotalAmount();
-            int index = r.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            int index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
             Component bullet = ammoSystem.checkBulletByPhone(index);
             System.out.print("NUMBER " + (index + 1) + " BULLET IS ");
             if (bullet instanceof BlankComponent) {
@@ -92,6 +91,19 @@ public class PropSystem extends EntitySystem {
             System.out.println("TYPE INDEX TO STEAL");
             int choice = Integer.parseInt(engine.input.nextLine()) - 1;
             stealPropByIndex(choice, turnSystem);
+        }
+    }
+
+    public void medicine() {
+        int chance = engine.rand.nextInt(2);
+        //chance==0 then damage, 1 then heal
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        PersonSystem personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
+        if (chance == 0) {
+            personSystem.harm();
+        } else {
+            personSystem.heal();
+            personSystem.heal();
         }
     }
 
@@ -129,12 +141,14 @@ public class PropSystem extends EntitySystem {
             phone();
         } else if (prop instanceof Adrenaline) {
             adrenaline();
+        } else if (prop instanceof MedicineComponent) {
+            medicine();
         }
     }
 
     public void spawnProps()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        int numberOfProps = r.nextInt(1, 3) * 2;
+        int numberOfProps = engine.rand.nextInt(1, 3) * 2;
         for (int i = 0; i < numberOfProps; i++) {
             Collections.shuffle(allPropsClasses);
             Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
