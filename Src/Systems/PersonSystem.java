@@ -4,37 +4,71 @@ import Components.Entity;
 import Components.HealthComponent;
 
 public class PersonSystem extends EntitySystem {
-    Entity person;
+    Entity dealer;
+    Entity player;
+    TurnSystem turnSystem;
 
-    public PersonSystem(Entity person) {
-        this.person = person;
+    public PersonSystem(Entity dealer, Entity player, TurnSystem turnSystem) {
+        this.dealer = dealer;
+        this.player = player;
+        this.turnSystem = turnSystem;
     }
 
     public void incrementHealth() {
-        HealthComponent healthComponent = (HealthComponent) person.getComponent(HealthComponent.class);
+        HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
+                (HealthComponent) player.getComponent(HealthComponent.class)
+                : (HealthComponent) dealer.getComponent(HealthComponent.class);
         if (healthComponent.getAmount() < HealthComponent.MAX)
             healthComponent.setAmount(healthComponent.getAmount() + 1);
     }
 
     public void decrementHealth() {
-        HealthComponent healthComponent = (HealthComponent) person.getComponent(HealthComponent.class);
+        HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
+                (HealthComponent) player.getComponent(HealthComponent.class)
+                : (HealthComponent) dealer.getComponent(HealthComponent.class);
         if (healthComponent.getAmount() > 0)
             healthComponent.setAmount(healthComponent.getAmount() - 1);
     }
 
-    public int getHealth() {
-        HealthComponent healthComponent = (HealthComponent) person.getComponent(HealthComponent.class);
-        return healthComponent.getAmount();
+    public void printHealth() {
+        HealthComponent playerHealth = (HealthComponent) player.getComponent(HealthComponent.class);
+        HealthComponent dealerHealth = (HealthComponent) dealer.getComponent(HealthComponent.class);
+        int playerAmount = playerHealth.getAmount();
+        int dealerAmount = dealerHealth.getAmount();
+        System.out.print("\t\t\tDEALER HEALTH:\t");
+        for (int i = 0; i < dealerAmount; i++) {
+            System.out.print("⬛");
+        }
+        System.out.println();
+        System.out.print("\t\t\tYOUR HEALTH:\t");
+        for (int i = 0; i < playerAmount; i++) {
+            System.out.print("⬛");
+        }
+        System.out.println();
     }
 
-    public boolean isDead() {
-        HealthComponent healthComponent = (HealthComponent) person.getComponent(HealthComponent.class);
+    public boolean isPlayerDead() {
+        HealthComponent healthComponent = (HealthComponent) player.getComponent(HealthComponent.class);
+        return healthComponent.getAmount() == 0;
+    }
+
+    public boolean isDealerDead() {
+        HealthComponent healthComponent = (HealthComponent) player.getComponent(HealthComponent.class);
         return healthComponent.getAmount() == 0;
     }
 
     public void setHealth(int amount) {
-        HealthComponent healthComponent = (HealthComponent) person.getComponent(HealthComponent.class);
-        healthComponent.setAmount(amount);
+        HealthComponent playerHealth = (HealthComponent) player.getComponent(HealthComponent.class);
+        HealthComponent dealerHealth = (HealthComponent) dealer.getComponent(HealthComponent.class);
+        dealerHealth.setAmount(amount);
+        playerHealth.setAmount(amount);
+    }
+
+    public boolean isWounded() {
+        HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
+                (HealthComponent) player.getComponent(HealthComponent.class)
+                : (HealthComponent) dealer.getComponent(HealthComponent.class);
+        return healthComponent.getAmount() != HealthComponent.MAX;
     }
 
 }

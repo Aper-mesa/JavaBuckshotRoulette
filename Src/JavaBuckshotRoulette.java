@@ -13,8 +13,7 @@ public class JavaBuckshotRoulette {
     AmmoSystem ammoSystem;
     Entity dealer;
     Entity player;
-    PersonSystem dealerSystem;
-    PersonSystem playerSystem;
+    PersonSystem personSystem;
     TurnSystem turnSystem;
     RoundSystem roundSystem;
     PropSystem propSystem = new PropSystem();
@@ -22,10 +21,10 @@ public class JavaBuckshotRoulette {
 
     public JavaBuckshotRoulette() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 //        setPlayerName();
-        addDealer();
-        addPlayer(playerName);
+        addTurnSystem();
+        addPeople();
         setInitialHealth();
-        printBothHealth();
+        personSystem.printHealth();
         addEngine();
         play();
     }
@@ -33,10 +32,8 @@ public class JavaBuckshotRoulette {
     private void addEngine() {
         addRoundSystem();
         addAmmoSystem();
-        addTurnSystem();
         engine.addSystem(roundSystem);
-        engine.addSystem(dealerSystem);
-        engine.addSystem(playerSystem);
+        engine.addSystem(personSystem);
         engine.addSystem(ammoSystem);
         engine.addSystem(turnSystem);
         engine.addSystem(propSystem);
@@ -44,8 +41,7 @@ public class JavaBuckshotRoulette {
 
     private void setInitialHealth() {
         initialHealth = r.nextInt(3) + 2;
-        dealerSystem.setHealth(initialHealth);
-        playerSystem.setHealth(initialHealth);
+        personSystem.setHealth(initialHealth);
     }
 
     private void setPlayerName() {
@@ -53,22 +49,18 @@ public class JavaBuckshotRoulette {
         playerName = input.nextLine().toUpperCase();
     }
 
-    private void addDealer() {
+    private void addPeople() {
         dealer = new Entity();
-        NameComponent name = new NameComponent("DEALER");
-        dealer.addComponent(name);
-        HealthComponent health = new HealthComponent(initialHealth);
-        dealer.addComponent(health);
-        dealerSystem = new PersonSystem(dealer);
-    }
-
-    private void addPlayer(String playerName) {
+        NameComponent dealerName = new NameComponent("DEALER");
+        dealer.addComponent(dealerName);
+        HealthComponent dealerHealth = new HealthComponent(initialHealth);
+        dealer.addComponent(dealerHealth);
         player = new Entity();
-        NameComponent name = new NameComponent(playerName);
-        player.addComponent(name);
-        HealthComponent health = new HealthComponent(initialHealth);
-        player.addComponent(health);
-        playerSystem = new PersonSystem(player);
+        NameComponent playerName = new NameComponent(this.playerName);
+        player.addComponent(playerName);
+        HealthComponent playerHealth = new HealthComponent(initialHealth);
+        player.addComponent(playerHealth);
+        personSystem = new PersonSystem(dealer, player, turnSystem);
     }
 
     private void addRoundSystem() {
@@ -103,7 +95,7 @@ public class JavaBuckshotRoulette {
                 System.out.println("\t\t\t--------------");
                 ammoSystem.reload(r.nextInt(7) + 2);
                 turnSystem.playerTurn();
-                printBothHealth();
+                personSystem.printHealth();
                 printChamber();
             }
             inTurn();
@@ -116,11 +108,10 @@ public class JavaBuckshotRoulette {
         } else {
             dealerTurn();
         }
-        if (playerSystem.isDead()) {
+        if (personSystem.isPlayerDead()) {
             System.out.println("YOU ARE DEAD, YOU LOSE");
             System.exit(-1);
-        }
-        if (dealerSystem.isDead()) {
+        } else if (personSystem.isDealerDead()) {
             System.out.println("DEALER IS DEAD, YOU WIN THE ROUND");
             engine.getSystem(PropSystem.class);
             nextRound();
@@ -133,7 +124,7 @@ public class JavaBuckshotRoulette {
         ammoSystem.reload(r.nextInt(7) + 2);
         turnSystem.playerTurn();
         setInitialHealth();
-        printBothHealth();
+        personSystem.printHealth();
         printChamber();
         propSystem.spawnProps();
     }
@@ -153,7 +144,7 @@ public class JavaBuckshotRoulette {
             default -> System.out.println("INVALID COMMAND");
         }
         ammoSystem.printChamber();
-        printBothHealth();
+        personSystem.printHealth();
     }
 
     private void dealerTurn() {
@@ -161,7 +152,7 @@ public class JavaBuckshotRoulette {
         System.out.println("THE DEALER SHOT YOU");
         shootPlayer();
         ammoSystem.printChamber();
-        printBothHealth();
+        personSystem.printHealth();
     }
 
     private void shootDealer() {
@@ -175,7 +166,7 @@ public class JavaBuckshotRoulette {
         }
         System.out.println("BOOM!");
         turnSystem.dealerTurn();
-        dealerSystem.decrementHealth();
+        personSystem.decrementHealth();
     }
 
     private void shootPlayer() {
@@ -189,7 +180,7 @@ public class JavaBuckshotRoulette {
         }
         System.out.println("BOOM!");
         turnSystem.playerTurn();
-        playerSystem.decrementHealth();
+        personSystem.decrementHealth();
     }
 
     private void useProps() {
@@ -200,18 +191,5 @@ public class JavaBuckshotRoulette {
 
     private void printBlankBullet() {
         System.out.println("BLANK BULLET");
-    }
-
-    private void printBothHealth() {
-        System.out.print("\t\t\tDEALER HEALTH:\t");
-        for (int i = 0; i < dealerSystem.getHealth(); i++) {
-            System.out.print("⬛");
-        }
-        System.out.println();
-        System.out.print("\t\t\tYOUR HEALTH:\t");
-        for (int i = 0; i < playerSystem.getHealth(); i++) {
-            System.out.print("⬛");
-        }
-        System.out.println();
     }
 }

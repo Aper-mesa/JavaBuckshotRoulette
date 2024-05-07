@@ -33,7 +33,14 @@ public class PropSystem extends EntitySystem {
     }
 
     public void cigarette(Engine engine) {
-
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        if (turnSystem.isPlayerTurn()) {
+            PersonSystem player = (PersonSystem) engine.getSystem(PersonSystem.class);
+            if (player.isWounded()) player.incrementHealth();
+        } else {
+            PersonSystem dealer = (PersonSystem) engine.getSystem(PersonSystem.class);
+            if (dealer.isWounded()) dealer.incrementHealth();
+        }
     }
 
     public void showProps() {
@@ -52,6 +59,8 @@ public class PropSystem extends EntitySystem {
         }
         if (prop instanceof BeerComponent) {
             beer(engine);
+        } else if (prop instanceof CigaretteComponent) {
+            cigarette(engine);
         }
     }
 
@@ -62,6 +71,8 @@ public class PropSystem extends EntitySystem {
             Collections.shuffle(allPropsClasses);
             Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
             dealerProps.add((Component) constructor.newInstance());
+            Collections.shuffle(allPropsClasses);
+            constructor = allPropsClasses.getFirst().getDeclaredConstructor();
             playerProps.add((Component) constructor.newInstance());
         }
     }
