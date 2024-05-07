@@ -2,7 +2,7 @@ package Systems;
 
 import Components.RoundComponent;
 
-public class RoundSystem {
+public class RoundSystem extends EntitySystem{
     RoundComponent round = new RoundComponent();
 
     public int getRound() {

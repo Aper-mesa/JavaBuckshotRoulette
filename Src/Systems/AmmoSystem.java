@@ -12,7 +12,6 @@ import java.util.Stack;
 public class AmmoSystem extends EntitySystem {
     private int ballAmount;
     private int blankAmount;
-    private int totalAmount;
     Stack<Component> chamber = new Stack<>();
     Random r = new Random();
 
@@ -22,7 +21,6 @@ public class AmmoSystem extends EntitySystem {
 
     public void reload(int totalAmount) {
         System.out.println("\t\t\tSHOTGUN RELOADED");
-        this.totalAmount = totalAmount;
         ballAmount = r.nextInt(totalAmount - 1) + 1;
         blankAmount = totalAmount - ballAmount;
         chamber.clear();
@@ -45,10 +43,6 @@ public class AmmoSystem extends EntitySystem {
         return chamber.isEmpty();
     }
 
-    public int getTotalAmount() {
-        return totalAmount;
-    }
-
     public int getBallAmount() {
         return ballAmount;
     }
@@ -60,6 +54,5 @@ public class AmmoSystem extends EntitySystem {
     public Component nextBullet() {
         return chamber.pop();
     }
-
 
 }
