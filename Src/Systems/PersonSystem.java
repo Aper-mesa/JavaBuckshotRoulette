@@ -7,11 +7,13 @@ public class PersonSystem extends EntitySystem {
     Entity dealer;
     Entity player;
     TurnSystem turnSystem;
+    Engine engine;
 
-    public PersonSystem(Entity dealer, Entity player, TurnSystem turnSystem) {
+    public PersonSystem(Engine engine, Entity dealer, Entity player, TurnSystem turnSystem) {
         this.dealer = dealer;
         this.player = player;
         this.turnSystem = turnSystem;
+        this.engine = engine;
     }
 
     public void incrementHealth() {
@@ -28,6 +30,11 @@ public class PersonSystem extends EntitySystem {
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);
         if (healthComponent.getAmount() > 0)
             healthComponent.setAmount(healthComponent.getAmount() - 1);
+        ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
+        if (shotgunSystem.isBarrelSawed()) {
+            healthComponent.setAmount(healthComponent.getAmount() - 1);
+            shotgunSystem.respawnBarrel();
+        }
     }
 
     public void printHealth() {

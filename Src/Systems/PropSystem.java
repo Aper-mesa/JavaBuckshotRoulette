@@ -18,6 +18,7 @@ public class PropSystem extends EntitySystem {
         allPropsClasses.add(BeerComponent.class);
         allPropsClasses.add(CigaretteComponent.class);
         allPropsClasses.add(MagnifierComponent.class);
+        allPropsClasses.add(HandsawComponent.class);
     }
 
     public void beer(Engine engine) {
@@ -54,6 +55,11 @@ public class PropSystem extends EntitySystem {
         }
     }
 
+    public void handsaw(Engine engine) {
+        ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
+        shotgunSystem.sawBarrel();
+    }
+
     public void showProps() {
         System.out.println("DEALER PROPS" + dealerProps.toString());
         System.out.println(" YOUR  PROPS" + playerProps.toString());
@@ -74,6 +80,8 @@ public class PropSystem extends EntitySystem {
             cigarette(engine);
         } else if (prop instanceof MagnifierComponent) {
             magnifier(engine);
+        } else if (prop instanceof HandsawComponent) {
+            handsaw(engine);
         }
     }
 

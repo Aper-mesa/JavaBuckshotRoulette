@@ -18,6 +18,7 @@ public class JavaBuckshotRoulette {
     RoundSystem roundSystem;
     PropSystem propSystem = new PropSystem();
     Engine engine = new Engine();
+    ShotgunSystem shotgunSystem = new ShotgunSystem();
 
     public JavaBuckshotRoulette() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 //        setPlayerName();
@@ -32,6 +33,7 @@ public class JavaBuckshotRoulette {
     private void addEngine() {
         addRoundSystem();
         addAmmoSystem();
+        engine.addSystem(shotgunSystem);
         engine.addSystem(roundSystem);
         engine.addSystem(personSystem);
         engine.addSystem(ammoSystem);
@@ -60,7 +62,7 @@ public class JavaBuckshotRoulette {
         player.addComponent(playerName);
         HealthComponent playerHealth = new HealthComponent(initialHealth);
         player.addComponent(playerHealth);
-        personSystem = new PersonSystem(dealer, player, turnSystem);
+        personSystem = new PersonSystem(engine, dealer, player, turnSystem);
     }
 
     private void addRoundSystem() {

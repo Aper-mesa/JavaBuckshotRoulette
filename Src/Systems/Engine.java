@@ -3,7 +3,7 @@ package Systems;
 import java.util.ArrayList;
 
 public class Engine {
-    ArrayList<EntitySystem> systems = new ArrayList<>();
+    private final ArrayList<EntitySystem> systems = new ArrayList<>();
 
     public void addSystem(EntitySystem system) {
         systems.add(system);
