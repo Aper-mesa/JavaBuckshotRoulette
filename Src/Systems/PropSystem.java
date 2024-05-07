@@ -19,6 +19,8 @@ public class PropSystem extends EntitySystem {
         allPropsClasses.add(CigaretteComponent.class);
         allPropsClasses.add(MagnifierComponent.class);
         allPropsClasses.add(HandsawComponent.class);
+        allPropsClasses.add(ConverterComponent.class);
+        allPropsClasses.add(PhoneComponent.class);
     }
 
     public void beer(Engine engine) {
@@ -55,6 +57,27 @@ public class PropSystem extends EntitySystem {
         }
     }
 
+    public void phone(Engine engine) {
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
+        if (turnSystem.isPlayerTurn()) {
+            int totalAmount = ammoSystem.getTotalAmount();
+            int index = r.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            Component bullet = ammoSystem.checkBulletByPhone(index);
+            System.out.print("NUMBER " + (index + 1) + " BULLET IS ");
+            if (bullet instanceof BlankComponent) {
+                System.out.println("BLANK");
+            } else {
+                System.out.println("BALL");
+            }
+        }
+    }
+
+    public void converter(Engine engine) {
+        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
+        ammoSystem.convertCurrentBullet();
+    }
+
     public void handsaw(Engine engine) {
         ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
         shotgunSystem.sawBarrel();
@@ -82,6 +105,10 @@ public class PropSystem extends EntitySystem {
             magnifier(engine);
         } else if (prop instanceof HandsawComponent) {
             handsaw(engine);
+        } else if (prop instanceof ConverterComponent) {
+            converter(engine);
+        } else if (prop instanceof PhoneComponent) {
+            phone(engine);
         }
     }
 

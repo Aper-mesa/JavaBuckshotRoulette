@@ -59,4 +59,21 @@ public class AmmoSystem extends EntitySystem {
         return chamber.peek();
     }
 
+    public void convertCurrentBullet() {
+        Component bullet = chamber.pop();
+        if (bullet instanceof BlankComponent) {
+            chamber.push(new BallComponent());
+        } else {
+            chamber.push(new BlankComponent());
+        }
+    }
+
+    public int getTotalAmount() {
+        return blankAmount + ballAmount;
+    }
+
+    public Component checkBulletByPhone(int index) {
+        return chamber.get(index);
+    }
+
 }
