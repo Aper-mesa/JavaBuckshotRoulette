@@ -20,7 +20,7 @@ public class PersonSystem extends EntitySystem {
         HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
                 (HealthComponent) player.getComponent(HealthComponent.class)
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);
-        if (healthComponent.getAmount() < HealthComponent.MAX)
+        if (healthComponent.getAmount() < healthComponent.maxHealth)
             healthComponent.setAmount(healthComponent.getAmount() + 1);
     }
 
@@ -69,13 +69,15 @@ public class PersonSystem extends EntitySystem {
         HealthComponent dealerHealth = (HealthComponent) dealer.getComponent(HealthComponent.class);
         dealerHealth.setAmount(amount);
         playerHealth.setAmount(amount);
+        playerHealth.maxHealth = amount;
+        dealerHealth.maxHealth = amount;
     }
 
     public boolean isWounded() {
         HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
                 (HealthComponent) player.getComponent(HealthComponent.class)
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);
-        return healthComponent.getAmount() != HealthComponent.MAX;
+        return healthComponent.getAmount() != healthComponent.maxHealth;
     }
 
 }
