@@ -60,7 +60,7 @@ public class PersonSystem extends EntitySystem {
     }
 
     public boolean isDealerDead() {
-        HealthComponent healthComponent = (HealthComponent) player.getComponent(HealthComponent.class);
+        HealthComponent healthComponent = (HealthComponent) dealer.getComponent(HealthComponent.class);
         return healthComponent.getAmount() == 0;
     }
 
