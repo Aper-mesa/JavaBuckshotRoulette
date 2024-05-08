@@ -141,7 +141,7 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("INVALID COMMAND");
         }
-        ammoSystem.printChamber();
+        //ammoSystem.printChamber();
         personSystem.printHealth();
     }
 
@@ -149,7 +149,7 @@ public class JavaBuckshotRoulette {
         System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
         System.out.println("THE DEALER SHOT YOU");
         shootPlayer();
-        ammoSystem.printChamber();
+        //ammoSystem.printChamber();
         personSystem.printHealth();
     }
 

@@ -13,6 +13,7 @@ public class AmmoSystem extends EntitySystem {
     private int ballAmount;
     private int blankAmount;
     Stack<Component> chamber = new Stack<>();
+    Stack<Component> chamberDuplication = new Stack<>();
     Random r = new Random();
 
     public AmmoSystem(int totalAmount) {
@@ -24,18 +25,21 @@ public class AmmoSystem extends EntitySystem {
         ballAmount = r.nextInt(totalAmount - 1) + 1;
         blankAmount = totalAmount - ballAmount;
         chamber.clear();
+        chamberDuplication.clear();
         for (int i = 0; i < ballAmount; i++) {
             chamber.push(new BallComponent());
+            chamberDuplication.push(new BallComponent());
         }
         for (int i = 0; i < blankAmount; i++) {
             chamber.push(new BlankComponent());
+            chamberDuplication.push(new BlankComponent());
         }
         Collections.shuffle(chamber);
-        printChamber();
+        cheat();
     }
 
     //for testing only
-    public void printChamber() {
+    public void cheat() {
         System.out.println("\t\t\t" + Arrays.toString(chamber.toArray()));
     }
 
@@ -73,7 +77,7 @@ public class AmmoSystem extends EntitySystem {
     }
 
     public Component checkBulletByPhone(int index) {
-        return chamber.get(index);
+        return chamberDuplication.get(index);
     }
 
 }
