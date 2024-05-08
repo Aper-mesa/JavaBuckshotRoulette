@@ -14,15 +14,19 @@ public class AmmoSystem extends EntitySystem {
     private int blankAmount;
     Stack<Component> chamber = new Stack<>();
     Stack<Component> chamberDuplication = new Stack<>();
-    Random r = new Random();
+    Engine engine;
 
-    public AmmoSystem(int totalAmount) {
+    public AmmoSystem(Engine engine, int totalAmount) {
+        this.engine = engine;
         reload(totalAmount);
     }
 
     public void reload(int totalAmount) {
         System.out.println("\t\t\tSHOTGUN RELOADED");
-        ballAmount = r.nextInt(totalAmount - 1) + 1;
+        //even bullets always have half balls and blanks
+        //odd bullets have x/2 or x/2 + 1
+        if (totalAmount % 2 == 0) ballAmount = totalAmount / 2;
+        else ballAmount = totalAmount / 2 + engine.rand.nextInt(2);
         blankAmount = totalAmount - ballAmount;
         chamber.clear();
         chamberDuplication.clear();

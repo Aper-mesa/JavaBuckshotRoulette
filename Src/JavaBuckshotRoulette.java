@@ -68,7 +68,7 @@ public class JavaBuckshotRoulette {
 
     private void addAmmoSystem() {
         int initialAmmo = engine.rand.nextInt(7) + 2;
-        ammoSystem = new AmmoSystem(initialAmmo);
+        ammoSystem = new AmmoSystem(engine, initialAmmo);
         printChamber();
     }
 
