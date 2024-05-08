@@ -148,7 +148,7 @@ public class PropSystem extends EntitySystem {
 
     public void spawnProps()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        int numberOfProps = engine.rand.nextInt(1, 3) * 2;
+        int numberOfProps = engine.rand.nextInt(2, 6);
         for (int i = 0; i < numberOfProps; i++) {
             Collections.shuffle(allPropsClasses);
             Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
