@@ -90,26 +90,19 @@ public class PropSystem extends EntitySystem {
         if (turnSystem.isPlayerTurn()) {
             System.out.println("TYPE INDEX TO STEAL");
             int choice = Integer.parseInt(engine.input.nextLine()) - 1;
-            stealPropByIndex(choice, turnSystem);
+            usePropByStealing(choice,turnSystem);
         }
     }
 
     public void medicine() {
         int chance = engine.rand.nextInt(2);
         //chance==0 then damage, 1 then heal
-        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         PersonSystem personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
         if (chance == 0) {
             personSystem.harm();
         } else {
             personSystem.heal();
             personSystem.heal();
-        }
-    }
-
-    public void stealPropByIndex(int index, TurnSystem turnSystem) {
-        if (turnSystem.isPlayerTurn()) {
-            playerProps.add(dealerProps.remove(index));
         }
     }
 
@@ -127,6 +120,22 @@ public class PropSystem extends EntitySystem {
             prop = playerProps.get(index);
             playerProps.remove(index);
         }
+        useProp(prop);
+    }
+
+    public void usePropByStealing(int index, TurnSystem turnSystem) {
+        Component prop;
+        if (turnSystem.isDealerTurn()) {
+            prop = playerProps.get(index);
+            playerProps.remove(index);
+        } else {
+            prop = dealerProps.get(index);
+            dealerProps.remove(index);
+        }
+        useProp(prop);
+    }
+
+    private void useProp(Component prop) {
         if (prop instanceof BeerComponent) {
             beer();
         } else if (prop instanceof CigaretteComponent) {
