@@ -163,8 +163,13 @@ public class JavaBuckshotRoulette {
             return;
         }
         System.out.println("BOOM!");
-        turnSystem.dealerTurn();
+        if (turnSystem.isPlayerTurn()) {
+            turnSystem.dealerTurn();
+            personSystem.harm();
+            return;
+        }
         personSystem.harm();
+        turnSystem.playerTurn();
     }
 
     private void shootPlayer() {
@@ -177,8 +182,13 @@ public class JavaBuckshotRoulette {
             return;
         }
         System.out.println("BOOM!");
-        turnSystem.playerTurn();
+        if (turnSystem.isDealerTurn()) {
+            turnSystem.playerTurn();
+            personSystem.harm();
+            return;
+        }
         personSystem.harm();
+        turnSystem.dealerTurn();
     }
 
     private void useProps() {
