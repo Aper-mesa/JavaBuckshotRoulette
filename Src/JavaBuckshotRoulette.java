@@ -83,7 +83,7 @@ public class JavaBuckshotRoulette {
     }
 
     private void play() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        propSystem.spawnProps();
+        propSystem.spawnPropsInNewRound();
         while (true) {
             if (roundSystem.noMoreRound()) {
                 System.out.println("GAME OVER");
@@ -92,6 +92,7 @@ public class JavaBuckshotRoulette {
             if (ammoSystem.noBullet()) {
                 System.out.println("\t\t\t--------------");
                 ammoSystem.reload(engine.rand.nextInt(7) + 2);
+                propSystem.spawnPropsInReload();
                 turnSystem.playerTurn();
                 personSystem.printHealth();
                 printChamber();
@@ -124,7 +125,7 @@ public class JavaBuckshotRoulette {
         setInitialHealth();
         personSystem.printHealth();
         printChamber();
-        propSystem.spawnProps();
+        propSystem.spawnPropsInNewRound();
     }
 
     private void playerTurn() {

@@ -146,16 +146,27 @@ public class PropSystem extends EntitySystem {
         }
     }
 
-    public void spawnProps()
+    public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         int numberOfProps = engine.rand.nextInt(2, 6);
         for (int i = 0; i < numberOfProps; i++) {
-            Collections.shuffle(allPropsClasses);
-            Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
-            dealerProps.add((Component) constructor.newInstance());
-            Collections.shuffle(allPropsClasses);
-            constructor = allPropsClasses.getFirst().getDeclaredConstructor();
-            playerProps.add((Component) constructor.newInstance());
+            spawnProps();
         }
+    }
+
+    public void spawnPropsInReload()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        for (int i = 0; i < 2; i++) {
+            spawnProps();
+        }
+    }
+
+    private void spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Collections.shuffle(allPropsClasses);
+        Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
+        dealerProps.add((Component) constructor.newInstance());
+        Collections.shuffle(allPropsClasses);
+        constructor = allPropsClasses.getFirst().getDeclaredConstructor();
+        playerProps.add((Component) constructor.newInstance());
     }
 }
