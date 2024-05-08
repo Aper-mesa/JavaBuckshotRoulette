@@ -90,7 +90,7 @@ public class PropSystem extends EntitySystem {
         if (turnSystem.isPlayerTurn()) {
             System.out.println("TYPE INDEX TO STEAL");
             int choice = Integer.parseInt(engine.input.nextLine()) - 1;
-            usePropByStealing(choice,turnSystem);
+            usePropByStealing(choice, turnSystem);
         }
     }
 
@@ -112,24 +112,26 @@ public class PropSystem extends EntitySystem {
     }
 
     public void usePropByIndex(int index, TurnSystem turnSystem) {
-        Component prop;
+        Component prop = turnSystem.isDealerTurn() ? dealerProps.get(index) : playerProps.get(index);
+        useProp(prop);
         if (turnSystem.isDealerTurn()) {
-            prop = dealerProps.get(index);
             dealerProps.remove(index);
         } else {
-            prop = playerProps.get(index);
             playerProps.remove(index);
         }
-        useProp(prop);
     }
 
     public void usePropByStealing(int index, TurnSystem turnSystem) {
-        Component prop;
+        Component prop = turnSystem.isDealerTurn() ? playerProps.get(index) : dealerProps.get(index);
+        if (prop instanceof Adrenaline) {
+            if(turnSystem.isPlayerTurn()){
+                System.out.println("CANNOT STEAL ADRENALINE, PROP WASTED");
+            }
+            return;
+        }
         if (turnSystem.isDealerTurn()) {
-            prop = playerProps.get(index);
             playerProps.remove(index);
         } else {
-            prop = dealerProps.get(index);
             dealerProps.remove(index);
         }
         useProp(prop);
