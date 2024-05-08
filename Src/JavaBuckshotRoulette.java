@@ -92,6 +92,7 @@ public class JavaBuckshotRoulette {
             if (ammoSystem.noBullet()) {
                 System.out.println("\t\t\t--------------");
                 ammoSystem.reload(engine.rand.nextInt(7) + 2);
+                propSystem.clearPhoneIndexes();
                 propSystem.spawnPropsInReload();
                 turnSystem.playerTurn();
                 personSystem.printHealth();
@@ -121,6 +122,7 @@ public class JavaBuckshotRoulette {
         roundSystem.nextRound();
         System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
         ammoSystem.reload(engine.rand.nextInt(7) + 2);
+        propSystem.clearPhoneIndexes();
         turnSystem.playerTurn();
         setInitialHealth();
         personSystem.printHealth();

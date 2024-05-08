@@ -32,13 +32,14 @@ public class AmmoSystem extends EntitySystem {
         chamberDuplication.clear();
         for (int i = 0; i < ballAmount; i++) {
             chamber.push(new BallComponent());
-            chamberDuplication.push(new BallComponent());
         }
         for (int i = 0; i < blankAmount; i++) {
             chamber.push(new BlankComponent());
-            chamberDuplication.push(new BlankComponent());
         }
         Collections.shuffle(chamber);
+        for (int i = chamber.size() - 1; i >= 0; i--) {
+            chamberDuplication.push(chamber.get(i));
+        }
         cheat();
     }
 
@@ -69,10 +70,13 @@ public class AmmoSystem extends EntitySystem {
 
     public void convertCurrentBullet() {
         Component bullet = chamber.pop();
+        chamber.pop();
         if (bullet instanceof BlankComponent) {
             chamber.push(new BallComponent());
+            chamberDuplication.push(new BallComponent());
         } else {
             chamber.push(new BlankComponent());
+            chamberDuplication.push(new BlankComponent());
         }
     }
 
