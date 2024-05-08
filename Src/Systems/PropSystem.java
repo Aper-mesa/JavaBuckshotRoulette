@@ -173,4 +173,9 @@ public class PropSystem extends EntitySystem {
             playerProps.add((Component) constructor.newInstance());
         }
     }
+
+    public void clearProps() {
+        dealerProps.clear();
+        playerProps.clear();
+    }
 }

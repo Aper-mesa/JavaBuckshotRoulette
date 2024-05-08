@@ -125,6 +125,7 @@ public class JavaBuckshotRoulette {
         setInitialHealth();
         personSystem.printHealth();
         printChamber();
+        propSystem.clearProps();
         propSystem.spawnPropsInNewRound();
     }
 
