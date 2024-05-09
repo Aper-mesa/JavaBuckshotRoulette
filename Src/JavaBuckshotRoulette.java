@@ -13,7 +13,7 @@ public class JavaBuckshotRoulette {
     TurnSystem turnSystem;
     RoundSystem roundSystem;
     Engine engine = new Engine();
-    PropSystem propSystem = new PropSystem(engine);
+    PropSystem propSystem;
     ShotgunSystem shotgunSystem = new ShotgunSystem();
 
     public JavaBuckshotRoulette() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
@@ -34,6 +34,7 @@ public class JavaBuckshotRoulette {
         engine.addSystem(personSystem);
         engine.addSystem(ammoSystem);
         engine.addSystem(turnSystem);
+        propSystem = new PropSystem(engine);
         engine.addSystem(propSystem);
     }
 
@@ -113,7 +114,6 @@ public class JavaBuckshotRoulette {
             System.exit(-1);
         } else if (personSystem.isDealerDead()) {
             System.out.println("DEALER IS DEAD, YOU WIN THE ROUND");
-            engine.getSystem(PropSystem.class);
             nextRound();
         }
     }
@@ -145,7 +145,7 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("INVALID COMMAND");
         }
-        //ammoSystem.printChamber();
+        //ammoSystem.cheat();
         personSystem.printHealth();
     }
 
@@ -153,7 +153,7 @@ public class JavaBuckshotRoulette {
         System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
         System.out.println("THE DEALER SHOT YOU");
         shootPlayer();
-        //ammoSystem.printChamber();
+        //ammoSystem.cheat();
         personSystem.printHealth();
     }
 

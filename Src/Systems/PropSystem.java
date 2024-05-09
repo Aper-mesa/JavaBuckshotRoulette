@@ -12,10 +12,13 @@ public class PropSystem extends EntitySystem {
     ArrayList<Component> playerProps = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
     ArrayList<Integer> usedIndexes = new ArrayList<>();
+    AmmoSystem ammoSystem;
+    int phoneNumbers = 0;
     Engine engine;
 
     public PropSystem(Engine engine) {
         this.engine = engine;
+        ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         allPropsClasses.add(PhoneComponent.class);
         allPropsClasses.add(BeerComponent.class);
         allPropsClasses.add(CigaretteComponent.class);
@@ -178,9 +181,15 @@ public class PropSystem extends EntitySystem {
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         int numberOfProps = engine.rand.nextInt(2, 6);
+        phoneNumbers = 0;
         do {
             for (int i = 0; i < numberOfProps; i++) {
-                spawnProps();
+                phoneNumbers = spawnProps();
+            }
+            int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
+            if (phoneNumbers > halfOfBullets) {
+                clearProps();
+                phoneNumbers = 0;
             }
         } while (!enoughProps(numberOfProps * 2));
     }
@@ -194,7 +203,7 @@ public class PropSystem extends EntitySystem {
         } while (!enoughProps(4));
     }
 
-    private void spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private int spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Collections.shuffle(allPropsClasses);
         Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
         if (dealerProps.size() < 8) {
@@ -205,7 +214,6 @@ public class PropSystem extends EntitySystem {
         if (playerProps.size() < 8) {
             playerProps.add((Component) constructor.newInstance());
         }
-        int phoneNumbers = 0;
         for (Component dealerProp : dealerProps) {
             if (dealerProp instanceof PhoneComponent) {
                 phoneNumbers++;
@@ -216,11 +224,7 @@ public class PropSystem extends EntitySystem {
                 phoneNumbers++;
             }
         }
-        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
-        int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
-        if (phoneNumbers > halfOfBullets) {
-            clearProps();
-        }
+        return phoneNumbers;
     }
 
     public void clearProps() {
