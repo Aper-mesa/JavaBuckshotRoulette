@@ -191,16 +191,23 @@ public class PropSystem extends EntitySystem {
                 clearProps();
                 phoneNumbers = 0;
             }
-        } while (!enoughProps(numberOfProps * 2));
+        } while (notEnoughProps(numberOfProps * 2));
     }
 
     public void spawnPropsInReload()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        phoneNumbers = 0;
+        int propsNumberBeforeReload = dealerProps.size() + playerProps.size();
         do {
             for (int i = 0; i < 2; i++) {
-                spawnProps();
+                phoneNumbers = spawnProps();
             }
-        } while (!enoughProps(4));
+            int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
+            if (phoneNumbers > halfOfBullets) {
+                removeTwoProps();
+                phoneNumbers = 0;
+            }
+        } while (notEnoughProps(propsNumberBeforeReload));
     }
 
     private int spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -232,7 +239,14 @@ public class PropSystem extends EntitySystem {
         playerProps.clear();
     }
 
-    public boolean enoughProps(int desiredNumber) {
-        return desiredNumber == playerProps.size() + dealerProps.size();
+    public void removeTwoProps() {
+        dealerProps.removeLast();
+        dealerProps.removeLast();
+        playerProps.removeLast();
+        playerProps.removeLast();
+    }
+
+    public boolean notEnoughProps(int desiredNumber) {
+        return desiredNumber > playerProps.size() + dealerProps.size();
     }
 }

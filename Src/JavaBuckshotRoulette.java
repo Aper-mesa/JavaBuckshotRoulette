@@ -120,6 +120,7 @@ public class JavaBuckshotRoulette {
 
     private void nextRound() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         roundSystem.nextRound();
+        if (roundSystem.noMoreRound()) return;
         System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
         ammoSystem.reload(engine.rand.nextInt(7) + 2);
         propSystem.clearPhoneIndexes();
