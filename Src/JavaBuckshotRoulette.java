@@ -10,8 +10,8 @@ public class JavaBuckshotRoulette {
     Entity dealer;
     Entity player;
     PersonSystem personSystem;
-    TurnSystem turnSystem;
-    RoundSystem roundSystem;
+    TurnSystem turnSystem = new TurnSystem();
+    RoundSystem roundSystem = new RoundSystem();
     Engine engine = new Engine();
     PropSystem propSystem;
     ShotgunSystem shotgunSystem = new ShotgunSystem();
@@ -19,7 +19,6 @@ public class JavaBuckshotRoulette {
     public JavaBuckshotRoulette()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 //        setPlayerName();
-        addTurnSystem();
         addPeople();
         setInitialHealth();
         personSystem.printHealth();
@@ -28,8 +27,10 @@ public class JavaBuckshotRoulette {
     }
 
     private void addEngine() {
-        addRoundSystem();
-        addAmmoSystem();
+        System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
+        int initialAmmo = engine.rand.nextInt(7) + 2;
+        ammoSystem = new AmmoSystem(engine, initialAmmo);
+        printChamber();
         engine.addSystem(shotgunSystem);
         engine.addSystem(roundSystem);
         engine.addSystem(personSystem);
@@ -63,25 +64,10 @@ public class JavaBuckshotRoulette {
         personSystem = new PersonSystem(engine, dealer, player, turnSystem);
     }
 
-    private void addRoundSystem() {
-        roundSystem = new RoundSystem();
-        System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
-    }
-
-    private void addAmmoSystem() {
-        int initialAmmo = engine.rand.nextInt(7) + 2;
-        ammoSystem = new AmmoSystem(engine, initialAmmo);
-        printChamber();
-    }
-
     private void printChamber() {
         int blankAmmo = ammoSystem.getBlankAmount();
         int ballAmmo = ammoSystem.getBallAmount();
         System.out.println("\t\t\tBLANK " + blankAmmo + "\t" + "BALL " + ballAmmo);
-    }
-
-    private void addTurnSystem() {
-        turnSystem = new TurnSystem();
     }
 
     private void play()

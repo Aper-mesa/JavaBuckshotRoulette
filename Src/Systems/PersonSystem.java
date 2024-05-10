@@ -77,5 +77,4 @@ public class PersonSystem extends ComponentSystem {
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);
         return healthComponent.amount != healthComponent.maxHealth;
     }
-
 }
