@@ -1,19 +1,19 @@
-import Systems.PersonSystem;
+import Systems.AmmoSystem;
+import Systems.Engine;
 
 public class DealerAI {
-    PersonSystem dealer;
-    PersonSystem player;
+    Engine engine;
 
-    public DealerAI(PersonSystem dealer, PersonSystem player) {
-        this.dealer = dealer;
-        this.player = player;
+    public DealerAI(Engine engine) {
+        this.engine = engine;
     }
 
-    public void shootSelf() {
-
+    public boolean shootSelf() {
+        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
+        if (ammoSystem.equalBullets()) {
+            return engine.rand.nextInt(2) == 1;
+        }
+        return ammoSystem.moreBlanks();
     }
 
-    public void shootPlayer() {
-
-    }
 }

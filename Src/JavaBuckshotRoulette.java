@@ -2,6 +2,7 @@ import Components.*;
 import Systems.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLOutput;
 
 public class JavaBuckshotRoulette {
     int initialHealth;
@@ -146,15 +147,21 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("INVALID COMMAND");
         }
-        //ammoSystem.cheat();
+        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
     private void dealerTurn() {
         System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
-        System.out.println("THE DEALER SHOT YOU");
-        shootPlayer();
-        //ammoSystem.cheat();
+        DealerAI ai = new DealerAI(engine);
+        if (ai.shootSelf()) {
+            System.out.println("DEALER SHOT HIMSELF");
+            shootDealer();
+        } else {
+            System.out.println("DEALER SHOT YOU");
+            shootPlayer();
+        }
+        ammoSystem.cheat();
         personSystem.printHealth();
     }
 

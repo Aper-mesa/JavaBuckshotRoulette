@@ -40,7 +40,7 @@ public class AmmoSystem extends EntitySystem {
         for (int i = chamber.size() - 1; i >= 0; i--) {
             chamberDuplication.push(chamber.get(i));
         }
-        //cheat();
+        cheat();
     }
 
     //for testing only
@@ -61,7 +61,13 @@ public class AmmoSystem extends EntitySystem {
     }
 
     public Component nextBullet() {
-        return chamber.pop();
+        Component bullet = chamber.pop();
+        if (bullet instanceof BallComponent) {
+            ballAmount--;
+        } else {
+            blankAmount--;
+        }
+        return bullet;
     }
 
     public Component checkBullet() {
@@ -86,6 +92,14 @@ public class AmmoSystem extends EntitySystem {
 
     public Component checkBulletByPhone(int index) {
         return chamberDuplication.get(index);
+    }
+
+    public boolean moreBlanks() {
+        return blankAmount > ballAmount;
+    }
+
+    public boolean equalBullets() {
+        return blankAmount == ballAmount;
     }
 
 }
