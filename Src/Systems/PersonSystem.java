@@ -16,18 +16,29 @@ public class PersonSystem extends EntitySystem {
         this.engine = engine;
     }
 
+    private HealthComponent getCorrectHealthComponent() {
+        HealthComponent healthComponent;
+        if (turnSystem.isHandcuffed()) {
+            healthComponent = turnSystem.isPlayerTurn() ?
+                    (HealthComponent) dealer.getComponent(HealthComponent.class)
+                    : (HealthComponent) player.getComponent(HealthComponent.class);
+            turnSystem.noHandcuff();
+        } else {
+            healthComponent = turnSystem.isPlayerTurn() ?
+                    (HealthComponent) player.getComponent(HealthComponent.class)
+                    : (HealthComponent) dealer.getComponent(HealthComponent.class);
+        }
+        return healthComponent;
+    }
+
     public void heal() {
-        HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
-                (HealthComponent) player.getComponent(HealthComponent.class)
-                : (HealthComponent) dealer.getComponent(HealthComponent.class);
+        HealthComponent healthComponent = getCorrectHealthComponent();
         if (healthComponent.getAmount() < healthComponent.maxHealth)
             healthComponent.setAmount(healthComponent.getAmount() + 1);
     }
 
     public void harm() {
-        HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
-                (HealthComponent) player.getComponent(HealthComponent.class)
-                : (HealthComponent) dealer.getComponent(HealthComponent.class);
+        HealthComponent healthComponent = getCorrectHealthComponent();
         if (healthComponent.getAmount() > 0)
             healthComponent.setAmount(healthComponent.getAmount() - 1);
         ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);

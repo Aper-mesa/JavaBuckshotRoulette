@@ -27,6 +27,7 @@ public class PropSystem extends EntitySystem {
         allPropsClasses.add(ConverterComponent.class);
         allPropsClasses.add(Adrenaline.class);
         allPropsClasses.add(MedicineComponent.class);
+        allPropsClasses.add(HandcuffComponent.class);
     }
 
     public void beer() {
@@ -127,6 +128,11 @@ public class PropSystem extends EntitySystem {
         }
     }
 
+    public void handcuff() {
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        turnSystem.handcuff();
+    }
+
     public void showProps() {
         System.out.println("DEALER PROPS" + dealerProps.toString());
         System.out.println(" YOUR  PROPS" + playerProps.toString());
@@ -175,6 +181,8 @@ public class PropSystem extends EntitySystem {
             adrenaline();
         } else if (prop instanceof MedicineComponent) {
             medicine();
+        } else if (prop instanceof HandcuffComponent) {
+            handcuff();
         }
     }
 
