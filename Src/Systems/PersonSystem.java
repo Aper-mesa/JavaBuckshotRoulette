@@ -3,9 +3,9 @@ package Systems;
 import Components.Entity;
 import Components.HealthComponent;
 
-public class PersonSystem extends EntitySystem {
+public class PersonSystem extends ComponentSystem {
     Entity dealer;
-    Entity player;
+    public Entity player;
     TurnSystem turnSystem;
     Engine engine;
 
@@ -16,34 +16,21 @@ public class PersonSystem extends EntitySystem {
         this.engine = engine;
     }
 
-    private HealthComponent getCorrectHealthComponent() {
-        HealthComponent healthComponent;
-        if (turnSystem.isHandcuffed()) {
-            healthComponent = turnSystem.isPlayerTurn() ?
-                    (HealthComponent) dealer.getComponent(HealthComponent.class)
-                    : (HealthComponent) player.getComponent(HealthComponent.class);
-            turnSystem.noHandcuff();
-        } else {
-            healthComponent = turnSystem.isPlayerTurn() ?
-                    (HealthComponent) player.getComponent(HealthComponent.class)
-                    : (HealthComponent) dealer.getComponent(HealthComponent.class);
-        }
-        return healthComponent;
-    }
-
     public void heal() {
-        HealthComponent healthComponent = getCorrectHealthComponent();
-        if (healthComponent.getAmount() < healthComponent.maxHealth)
-            healthComponent.setAmount(healthComponent.getAmount() + 1);
+        HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
+                (HealthComponent) player.getComponent(HealthComponent.class)
+                : (HealthComponent) dealer.getComponent(HealthComponent.class);
+        if (healthComponent.amount < healthComponent.maxHealth)
+            healthComponent.amount = healthComponent.amount + 1;
     }
 
-    public void harm() {
-        HealthComponent healthComponent = getCorrectHealthComponent();
-        if (healthComponent.getAmount() > 0)
-            healthComponent.setAmount(healthComponent.getAmount() - 1);
+    public void harm(Entity person) {
+        HealthComponent dealerHealth = (HealthComponent) person.getComponent(HealthComponent.class);
+        if (dealerHealth.amount > 0)
+            dealerHealth.amount = dealerHealth.amount - 1;
         ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
-        if (shotgunSystem.isBarrelSawed()) {
-            healthComponent.setAmount(healthComponent.getAmount() - 1);
+        if (shotgunSystem.isBarrelSawed() && dealerHealth.amount > 0) {
+            dealerHealth.amount = dealerHealth.amount - 1;
             shotgunSystem.respawnBarrel();
         }
     }
@@ -51,8 +38,8 @@ public class PersonSystem extends EntitySystem {
     public void printHealth() {
         HealthComponent playerHealth = (HealthComponent) player.getComponent(HealthComponent.class);
         HealthComponent dealerHealth = (HealthComponent) dealer.getComponent(HealthComponent.class);
-        int playerAmount = playerHealth.getAmount();
-        int dealerAmount = dealerHealth.getAmount();
+        int playerAmount = playerHealth.amount;
+        int dealerAmount = dealerHealth.amount;
         System.out.print("\t\t\tDEALER HEALTH:\t");
         for (int i = 0; i < dealerAmount; i++) {
             System.out.print("⬛");
@@ -67,19 +54,19 @@ public class PersonSystem extends EntitySystem {
 
     public boolean isPlayerDead() {
         HealthComponent healthComponent = (HealthComponent) player.getComponent(HealthComponent.class);
-        return healthComponent.getAmount() == 0;
+        return healthComponent.amount == 0;
     }
 
     public boolean isDealerDead() {
         HealthComponent healthComponent = (HealthComponent) dealer.getComponent(HealthComponent.class);
-        return healthComponent.getAmount() == 0;
+        return healthComponent.amount == 0;
     }
 
     public void setHealth(int amount) {
         HealthComponent playerHealth = (HealthComponent) player.getComponent(HealthComponent.class);
         HealthComponent dealerHealth = (HealthComponent) dealer.getComponent(HealthComponent.class);
-        dealerHealth.setAmount(amount);
-        playerHealth.setAmount(amount);
+        dealerHealth.amount = amount;
+        playerHealth.amount = amount;
         playerHealth.maxHealth = amount;
         dealerHealth.maxHealth = amount;
     }
@@ -88,7 +75,7 @@ public class PersonSystem extends EntitySystem {
         HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
                 (HealthComponent) player.getComponent(HealthComponent.class)
                 : (HealthComponent) dealer.getComponent(HealthComponent.class);
-        return healthComponent.getAmount() != healthComponent.maxHealth;
+        return healthComponent.amount != healthComponent.maxHealth;
     }
 
 }

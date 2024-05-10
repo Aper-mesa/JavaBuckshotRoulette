@@ -4,7 +4,7 @@ import Components.Entity;
 
 import java.util.ArrayList;
 
-public class EntitySystem {
+public class ComponentSystem {
     public ArrayList<Entity> entities = new ArrayList<>();
 
     public void addEntity(Entity entity) {

@@ -6,10 +6,9 @@ import Components.Component;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 import java.util.Stack;
 
-public class AmmoSystem extends EntitySystem {
+public class AmmoSystem extends ComponentSystem {
     private int ballAmount;
     private int blankAmount;
     Stack<Component> chamber = new Stack<>();

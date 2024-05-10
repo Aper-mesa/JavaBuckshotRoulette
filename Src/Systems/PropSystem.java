@@ -7,31 +7,34 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class PropSystem extends EntitySystem {
-    ArrayList<Component> dealerProps = new ArrayList<>(8);
+public class PropSystem extends ComponentSystem {
+    public ArrayList<Component> dealerProps = new ArrayList<>(8);
     ArrayList<Component> playerProps = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
     ArrayList<Integer> usedIndexes = new ArrayList<>();
     AmmoSystem ammoSystem;
+    TurnSystem turnSystem;
+    PersonSystem personSystem;
     int phoneNumbers = 0;
     Engine engine;
 
     public PropSystem(Engine engine) {
         this.engine = engine;
         ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
+        turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
         allPropsClasses.add(PhoneComponent.class);
         allPropsClasses.add(BeerComponent.class);
         allPropsClasses.add(CigaretteComponent.class);
         allPropsClasses.add(MagnifierComponent.class);
         allPropsClasses.add(HandsawComponent.class);
         allPropsClasses.add(ConverterComponent.class);
-        allPropsClasses.add(Adrenaline.class);
+        allPropsClasses.add(AdrenalineComponent.class);
         allPropsClasses.add(MedicineComponent.class);
         allPropsClasses.add(HandcuffComponent.class);
     }
 
     public void beer() {
-        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         Component bullet = ammoSystem.nextBullet();
         if (bullet instanceof BlankComponent) {
             System.out.println("BLANK");
@@ -41,20 +44,11 @@ public class PropSystem extends EntitySystem {
     }
 
     public void cigarette() {
-        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
-        if (turnSystem.isPlayerTurn()) {
-            PersonSystem player = (PersonSystem) engine.getSystem(PersonSystem.class);
-            if (player.isWounded()) player.heal();
-        } else if (turnSystem.isDealerTurn()) {
-            PersonSystem dealer = (PersonSystem) engine.getSystem(PersonSystem.class);
-            if (dealer.isWounded()) dealer.heal();
-        }
+        if (personSystem.isWounded()) personSystem.heal();
     }
 
     public void magnifier() {
-        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         if (turnSystem.isPlayerTurn()) {
-            AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
             Component bullet = ammoSystem.checkBullet();
             if (bullet instanceof BlankComponent) {
                 System.out.println("BLANK");
@@ -65,8 +59,6 @@ public class PropSystem extends EntitySystem {
     }
 
     public void phone() {
-        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
-        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         int index = -1;
         if (turnSystem.isPlayerTurn()) {
             int totalAmount = ammoSystem.getTotalAmount();
@@ -98,7 +90,6 @@ public class PropSystem extends EntitySystem {
     }
 
     public void converter() {
-        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         ammoSystem.convertCurrentBullet();
     }
 
@@ -108,7 +99,6 @@ public class PropSystem extends EntitySystem {
     }
 
     public void adrenaline() {
-        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         if (turnSystem.isPlayerTurn()) {
             System.out.println("TYPE INDEX TO STEAL");
             int choice = Integer.parseInt(engine.input.nextLine()) - 1;
@@ -119,9 +109,8 @@ public class PropSystem extends EntitySystem {
     public void medicine() {
         int chance = engine.rand.nextInt(2);
         //chance==0 then damage, 1 then heal
-        PersonSystem personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
         if (chance == 0) {
-            personSystem.harm();
+            personSystem.harm(personSystem.player);
         } else {
             personSystem.heal();
             personSystem.heal();
@@ -129,7 +118,6 @@ public class PropSystem extends EntitySystem {
     }
 
     public void handcuff() {
-        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         turnSystem.handcuff();
     }
 
@@ -150,7 +138,7 @@ public class PropSystem extends EntitySystem {
 
     public void usePropByStealing(int index, TurnSystem turnSystem) {
         Component prop = turnSystem.isDealerTurn() ? playerProps.get(index) : dealerProps.get(index);
-        if (prop instanceof Adrenaline) {
+        if (prop instanceof AdrenalineComponent) {
             if (turnSystem.isPlayerTurn()) {
                 System.out.println("CANNOT STEAL ADRENALINE, PROP WASTED");
             }
@@ -177,7 +165,7 @@ public class PropSystem extends EntitySystem {
             converter();
         } else if (prop instanceof PhoneComponent) {
             phone();
-        } else if (prop instanceof Adrenaline) {
+        } else if (prop instanceof AdrenalineComponent) {
             adrenaline();
         } else if (prop instanceof MedicineComponent) {
             medicine();
@@ -192,6 +180,7 @@ public class PropSystem extends EntitySystem {
         phoneNumbers = 0;
         do {
             for (int i = 0; i < numberOfProps; i++) {
+                phoneNumbers = 0;
                 phoneNumbers = spawnProps();
             }
             int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
@@ -206,16 +195,18 @@ public class PropSystem extends EntitySystem {
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         phoneNumbers = 0;
         int propsNumberBeforeReload = dealerProps.size() + playerProps.size();
+        if (propsNumberBeforeReload == 8) return;
         do {
             for (int i = 0; i < 2; i++) {
+                phoneNumbers = 0;
                 phoneNumbers = spawnProps();
             }
             int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
-            if (phoneNumbers > halfOfBullets) {
+            if (phoneNumbers >= halfOfBullets) {
                 removeTwoProps();
                 phoneNumbers = 0;
             }
-        } while (notEnoughProps(propsNumberBeforeReload));
+        } while (notEnoughProps(propsNumberBeforeReload + 1));
     }
 
     private int spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -256,5 +247,23 @@ public class PropSystem extends EntitySystem {
 
     public boolean notEnoughProps(int desiredNumber) {
         return desiredNumber > playerProps.size() + dealerProps.size();
+    }
+
+    public boolean dealerHasProp(Class<?> prop) {
+        for (Component dealerProp : dealerProps) {
+            if (dealerProp.getClass() == prop) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeDealerProp(Class<?> prop) {
+        for (Component dealerProp : dealerProps) {
+            if (dealerProp.getClass() == prop) {
+                dealerProps.remove(dealerProp);
+                return;
+            }
+        }
     }
 }

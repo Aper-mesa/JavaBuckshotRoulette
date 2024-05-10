@@ -2,11 +2,11 @@ package Systems;
 
 import Components.TurnComponent;
 
-public class TurnSystem extends EntitySystem {
+public class TurnSystem extends ComponentSystem {
     TurnComponent turn = new TurnComponent();
 
     public boolean isPlayerTurn() {
-        return turn.getPlayerTurn();
+        return turn.isPlayerTurn;
     }
 
     public boolean isDealerTurn() {
@@ -17,14 +17,14 @@ public class TurnSystem extends EntitySystem {
         if (turn.handcuffed) {
             return;
         }
-        turn.setPlayerTurn(true);
+        turn.isPlayerTurn = true;
     }
 
     public void dealerTurn() {
         if (turn.handcuffed) {
             return;
         }
-        turn.setPlayerTurn(false);
+        turn.isPlayerTurn = false;
     }
 
     public void handcuff() {
@@ -35,8 +35,8 @@ public class TurnSystem extends EntitySystem {
         turn.handcuffed = false;
     }
 
-    public boolean isHandcuffed() {
-        return turn.handcuffed;
+    public boolean notHandcuffed() {
+        return !turn.handcuffed;
     }
 
 }

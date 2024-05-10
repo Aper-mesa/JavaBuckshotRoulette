@@ -2,7 +2,6 @@ import Components.*;
 import Systems.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLOutput;
 
 public class JavaBuckshotRoulette {
     int initialHealth;
@@ -17,7 +16,8 @@ public class JavaBuckshotRoulette {
     PropSystem propSystem;
     ShotgunSystem shotgunSystem = new ShotgunSystem();
 
-    public JavaBuckshotRoulette() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    public JavaBuckshotRoulette()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 //        setPlayerName();
         addTurnSystem();
         addPeople();
@@ -84,7 +84,8 @@ public class JavaBuckshotRoulette {
         turnSystem = new TurnSystem();
     }
 
-    private void play() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    private void play()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         propSystem.spawnPropsInNewRound();
         while (true) {
             if (roundSystem.noMoreRound()) {
@@ -104,7 +105,8 @@ public class JavaBuckshotRoulette {
         }
     }
 
-    private void inTurn() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    private void inTurn()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         if (turnSystem.isPlayerTurn()) {
             playerTurn();
         } else {
@@ -119,7 +121,8 @@ public class JavaBuckshotRoulette {
         }
     }
 
-    private void nextRound() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    private void nextRound()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         roundSystem.nextRound();
         if (roundSystem.noMoreRound()) return;
         System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
@@ -154,6 +157,7 @@ public class JavaBuckshotRoulette {
     private void dealerTurn() {
         System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
         DealerAI ai = new DealerAI(engine);
+        ai.useProp();
         if (ai.shootSelf()) {
             System.out.println("DEALER SHOT HIMSELF");
             shootDealer();
@@ -171,16 +175,17 @@ public class JavaBuckshotRoulette {
             printBlankBullet();
             if (turnSystem.isPlayerTurn()) {
                 turnSystem.dealerTurn();
+                turnSystem.noHandcuff();
             }
             return;
         }
         System.out.println("BOOM!");
-        if (turnSystem.isPlayerTurn()) {
+        personSystem.harm(dealer);
+        if (turnSystem.isPlayerTurn() && turnSystem.notHandcuffed()) {
             turnSystem.dealerTurn();
-            personSystem.harm();
             return;
         }
-        personSystem.harm();
+        turnSystem.noHandcuff();
         turnSystem.playerTurn();
     }
 
@@ -190,16 +195,17 @@ public class JavaBuckshotRoulette {
             printBlankBullet();
             if (turnSystem.isDealerTurn()) {
                 turnSystem.playerTurn();
+                turnSystem.noHandcuff();
             }
             return;
         }
         System.out.println("BOOM!");
-        if (turnSystem.isDealerTurn()) {
+        personSystem.harm(player);
+        if (turnSystem.isDealerTurn() && turnSystem.notHandcuffed()) {
             turnSystem.playerTurn();
-            personSystem.harm();
             return;
         }
-        personSystem.harm();
+        turnSystem.noHandcuff();
         turnSystem.dealerTurn();
     }
 

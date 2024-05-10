@@ -1,5 +1,7 @@
+import Components.HandcuffComponent;
 import Systems.AmmoSystem;
 import Systems.Engine;
+import Systems.PropSystem;
 
 public class DealerAI {
     Engine engine;
@@ -14,6 +16,15 @@ public class DealerAI {
             return engine.rand.nextInt(2) == 1;
         }
         return ammoSystem.moreBlanks();
+    }
+
+    public void useProp() {
+        PropSystem propSystem = (PropSystem) engine.getSystem(PropSystem.class);
+        if (propSystem.dealerHasProp(HandcuffComponent.class)) {
+            System.out.println("DEALER USED HANDCUFF");
+            propSystem.handcuff();
+            propSystem.removeDealerProp(HandcuffComponent.class);
+        }
     }
 
 }

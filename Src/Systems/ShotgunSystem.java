@@ -1,6 +1,6 @@
 package Systems;
 
-public class ShotgunSystem extends EntitySystem {
+public class ShotgunSystem extends ComponentSystem {
     private boolean isBarrelSawed = false;
 
     public void sawBarrel() {
