@@ -46,15 +46,16 @@ public class PropSystem extends ComponentSystem {
         if (personSystem.isWounded()) personSystem.heal();
     }
 
-    public void magnifier() {
+    public Component magnifier() {
+        Component bullet = ammoSystem.checkBullet();
         if (turnSystem.isPlayerTurn()) {
-            Component bullet = ammoSystem.checkBullet();
             if (bullet instanceof BlankComponent) {
                 System.out.println("BLANK");
             } else {
                 System.out.println("BALL");
             }
         }
+        return bullet;
     }
 
     public void phone() {

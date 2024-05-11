@@ -3,17 +3,21 @@ import Systems.*;
 
 public class DealerAI {
     Engine engine;
+    boolean shootSelf;
+    public boolean nextBall = false;
 
     public DealerAI(Engine engine) {
         this.engine = engine;
     }
 
-    public boolean shootSelf() {
+    public boolean shootSelfByBulletNumbers() {
         AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
         if (ammoSystem.equalBullets()) {
-            return engine.rand.nextInt(2) == 1;
+            shootSelf = engine.rand.nextInt(2) == 1;
+            return shootSelf;
         }
-        return ammoSystem.moreBlanks();
+        shootSelf = ammoSystem.moreBlanks();
+        return shootSelf;
     }
 
     public void useProp() {
@@ -41,21 +45,30 @@ public class DealerAI {
                 propSystem.removeDealerProp(CigaretteComponent.class);
             }
         }
+        //use magnifier to check the bullet; a ball directly makes him shoot the player
+        if (propSystem.dealerHasProp(MagnifierComponent.class)) {
+            System.out.println("DEALER USED MAGNIFIER");
+            Component bullet = propSystem.magnifier();
+            if (bullet instanceof BallComponent) {
+                shootSelf = false;
+                nextBall = true;
+            }
+            propSystem.removeDealerProp(MagnifierComponent.class);
+        }
         //use handsaw if he wants to shoot the player
-        if (!shootSelf() && propSystem.dealerHasProp(HandsawComponent.class)) {
-            System.out.println(shootSelf());
+        if ((!shootSelfByBulletNumbers() || nextBall) && propSystem.dealerHasProp(HandsawComponent.class)) {
             System.out.println("DEALER USED HANDSAW");
             propSystem.handsaw();
             propSystem.removeDealerProp(HandsawComponent.class);
         }
         //use beer if he wants to shoot himself
-        while (shootSelf() && propSystem.dealerHasProp(BeerComponent.class)) {
+        while ((shootSelfByBulletNumbers() && !nextBall) && propSystem.dealerHasProp(BeerComponent.class)) {
             System.out.println("DEALER USED BEER");
             propSystem.beer();
             propSystem.removeDealerProp(BeerComponent.class);
         }
         //use converter if he wants to shoot himself
-        if (shootSelf() && propSystem.dealerHasProp(ConverterComponent.class)) {
+        if ((shootSelfByBulletNumbers() || !nextBall) && propSystem.dealerHasProp(ConverterComponent.class)) {
             System.out.println("DEALER USED CONVERTER");
             propSystem.converter();
             propSystem.removeDealerProp(ConverterComponent.class);
