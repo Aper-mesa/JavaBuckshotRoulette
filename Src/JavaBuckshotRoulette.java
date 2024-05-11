@@ -159,6 +159,7 @@ public class JavaBuckshotRoulette {
     private void shootDealer() {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
+            shotgunSystem.respawnBarrel();
             printBlankBullet();
             if (turnSystem.isPlayerTurn()) {
                 turnSystem.dealerTurn();
@@ -179,6 +180,7 @@ public class JavaBuckshotRoulette {
     private void shootPlayer() {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
+            shotgunSystem.respawnBarrel();
             printBlankBullet();
             if (turnSystem.isDealerTurn()) {
                 turnSystem.playerTurn();
