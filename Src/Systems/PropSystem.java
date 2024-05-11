@@ -15,7 +15,6 @@ public class PropSystem extends ComponentSystem {
     AmmoSystem ammoSystem;
     TurnSystem turnSystem;
     PersonSystem personSystem;
-    int phoneNumbers = 0;
     Engine engine;
 
     public PropSystem(Engine engine) {
@@ -177,39 +176,21 @@ public class PropSystem extends ComponentSystem {
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         int numberOfProps = engine.rand.nextInt(2, 6);
-        phoneNumbers = 0;
-        do {
             for (int i = 0; i < numberOfProps; i++) {
-                phoneNumbers = 0;
-                phoneNumbers = spawnProps();
+                spawnProps();
             }
-            int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
-            if (phoneNumbers > halfOfBullets) {
-                clearProps();
-                phoneNumbers = 0;
-            }
-        } while (notEnoughProps(numberOfProps * 2));
     }
 
     public void spawnPropsInReload()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        phoneNumbers = 0;
         int propsNumberBeforeReload = dealerProps.size() + playerProps.size();
         if (propsNumberBeforeReload == 8) return;
-        do {
-            for (int i = 0; i < 2; i++) {
-                phoneNumbers = 0;
-                phoneNumbers = spawnProps();
-            }
-            int halfOfBullets = ammoSystem.getTotalAmount() / 2 - 1;
-            if (phoneNumbers >= halfOfBullets) {
-                removeTwoProps();
-                phoneNumbers = 0;
-            }
-        } while (notEnoughProps(propsNumberBeforeReload + 1));
+        for (int i = 0; i < 2; i++) {
+            spawnProps();
+        }
     }
 
-    private int spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private void spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Collections.shuffle(allPropsClasses);
         Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
         if (dealerProps.size() < 8) {
@@ -220,33 +201,11 @@ public class PropSystem extends ComponentSystem {
         if (playerProps.size() < 8) {
             playerProps.add((Component) constructor.newInstance());
         }
-        for (Component dealerProp : dealerProps) {
-            if (dealerProp instanceof PhoneComponent) {
-                phoneNumbers++;
-            }
-        }
-        for (Component playerProp : playerProps) {
-            if (playerProp instanceof PhoneComponent) {
-                phoneNumbers++;
-            }
-        }
-        return phoneNumbers;
     }
 
     public void clearProps() {
         dealerProps.clear();
         playerProps.clear();
-    }
-
-    public void removeTwoProps() {
-        dealerProps.removeLast();
-        dealerProps.removeLast();
-        playerProps.removeLast();
-        playerProps.removeLast();
-    }
-
-    public boolean notEnoughProps(int desiredNumber) {
-        return desiredNumber > playerProps.size() + dealerProps.size();
     }
 
     public boolean dealerHasProp(Class<?> prop) {
