@@ -9,7 +9,7 @@ import java.util.Collections;
 
 public class PropSystem extends ComponentSystem {
     public ArrayList<Component> dealerProps = new ArrayList<>(8);
-    ArrayList<Component> playerProps = new ArrayList<>(8);
+    public ArrayList<Component> playerProps = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
     ArrayList<Integer> usedIndexes = new ArrayList<>();
     AmmoSystem ammoSystem;
@@ -106,6 +106,14 @@ public class PropSystem extends ComponentSystem {
         }
     }
 
+    public void dealerAdrenaline(Class<? extends Component> prop) {
+        for (Component playerProp : playerProps) {
+            if (playerProp.getClass() == prop) {
+                removePlayerProp(prop);
+            }
+        }
+    }
+
     public void medicine() {
         int chance = engine.rand.nextInt(2);
         //chance==0 then damage, 1 then heal
@@ -124,7 +132,8 @@ public class PropSystem extends ComponentSystem {
     public void handcuff() {
         //attempting to use an extra handcuff when a handcuff is in use results in wasting this extra handcuff
         if (!turnSystem.notHandcuffed()) {
-            System.out.println("CANNOT USE MORE HANDCUFFS, PROP WASTED");
+                System.out.println("CANNOT USE MORE HANDCUFFS, PROP WASTED");
+            return;
         }
         turnSystem.handcuff();
     }
@@ -217,7 +226,7 @@ public class PropSystem extends ComponentSystem {
         playerProps.clear();
     }
 
-    public boolean dealerHasProp(Class<?> prop) {
+    public boolean dealerHasProp(Class<? extends Component> prop) {
         for (Component dealerProp : dealerProps) {
             if (dealerProp.getClass() == prop) {
                 return true;
@@ -226,10 +235,28 @@ public class PropSystem extends ComponentSystem {
         return false;
     }
 
-    public void removeDealerProp(Class<?> prop) {
+    public boolean playerHasProp(Class<? extends Component> prop) {
+        for (Component dealerProp : playerProps) {
+            if (dealerProp.getClass() == prop) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeDealerProp(Class<? extends Component> prop) {
         for (Component dealerProp : dealerProps) {
             if (dealerProp.getClass() == prop) {
                 dealerProps.remove(dealerProp);
+                return;
+            }
+        }
+    }
+
+    public void removePlayerProp(Class<? extends Component> prop) {
+        for (Component dealerProp : playerProps) {
+            if (dealerProp.getClass() == prop) {
+                playerProps.remove(dealerProp);
                 return;
             }
         }
