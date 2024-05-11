@@ -106,10 +106,11 @@ public class PropSystem extends ComponentSystem {
         }
     }
 
-    public void dealerAdrenaline(Class<? extends Component> prop) {
+    public void dealerAdrenaline(Class<?> prop) {
         for (Component playerProp : playerProps) {
             if (playerProp.getClass() == prop) {
                 removePlayerProp(prop);
+                return;
             }
         }
     }
@@ -132,7 +133,7 @@ public class PropSystem extends ComponentSystem {
     public void handcuff() {
         //attempting to use an extra handcuff when a handcuff is in use results in wasting this extra handcuff
         if (!turnSystem.notHandcuffed()) {
-                System.out.println("CANNOT USE MORE HANDCUFFS, PROP WASTED");
+            System.out.println("CANNOT USE MORE HANDCUFFS, PROP WASTED");
             return;
         }
         turnSystem.handcuff();
@@ -193,7 +194,8 @@ public class PropSystem extends ComponentSystem {
 
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        int numberOfProps = engine.rand.nextInt(2, 6);
+//        int numberOfProps = engine.rand.nextInt(2, 6);
+        int numberOfProps = 8;
         for (int i = 0; i < numberOfProps; i++) {
             spawnProps();
         }
@@ -253,7 +255,7 @@ public class PropSystem extends ComponentSystem {
         }
     }
 
-    public void removePlayerProp(Class<? extends Component> prop) {
+    public void removePlayerProp(Class<?> prop) {
         for (Component dealerProp : playerProps) {
             if (dealerProp.getClass() == prop) {
                 playerProps.remove(dealerProp);

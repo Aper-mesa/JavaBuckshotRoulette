@@ -145,10 +145,10 @@ public class JavaBuckshotRoulette {
         System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
         DealerAI ai = new DealerAI(engine);
         ai.useProp();
-        if (ai.shootSelfByBulletNumbers() && !ai.nextBall) {
+        if (!ammoSystem.noBullet() && ai.shootSelfByBulletNumbers() && !ai.nextBall) {
             System.out.println("DEALER SHOT HIMSELF");
             shootDealer();
-        } else {
+        } else if (!ammoSystem.noBullet()) {
             System.out.println("DEALER SHOT YOU");
             shootPlayer();
         }

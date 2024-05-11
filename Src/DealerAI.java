@@ -5,12 +5,18 @@ public class DealerAI {
     Engine engine;
     boolean shootSelf;
     public boolean nextBall = false;
-    PropSystem propSystem = (PropSystem) engine.getSystem(PropSystem.class);
-    PersonSystem personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
-    TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+    boolean usedMagnifier = false;
+    PropSystem propSystem;
+    PersonSystem personSystem;
+    TurnSystem turnSystem;
+    AmmoSystem ammoSystem;
 
     public DealerAI(Engine engine) {
         this.engine = engine;
+        propSystem = (PropSystem) engine.getSystem(PropSystem.class);
+        personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
+        turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
+        ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
     }
 
     public boolean shootSelfByBulletNumbers() {
@@ -24,6 +30,8 @@ public class DealerAI {
     }
 
     public void useProp() {
+        usedMagnifier = false;
+        nextBall = false;
         //handcuff has the highest priority
         if (turnSystem.notHandcuffed() && propSystem.dealerHasProp(HandcuffComponent.class)) {
             System.out.println("DEALER USED HANDCUFF");
@@ -55,34 +63,36 @@ public class DealerAI {
                 propSystem.handcuff();
             }
             //use player's cigarette if dealer is wounded; the dealer won't use player's medicine
-            if (personSystem.isWounded() && propSystem.playerHasProp(CigaretteComponent.class)) {
+            else if (personSystem.isWounded() && propSystem.playerHasProp(CigaretteComponent.class)) {
                 System.out.println("DEALER STOLE YOUR CIGARETTE");
                 propSystem.dealerAdrenaline(CigaretteComponent.class);
                 propSystem.cigarette();
                 return;
             }
             //use player's magnifier
-            if (propSystem.playerHasProp(MagnifierComponent.class)) {
+            else if (propSystem.playerHasProp(MagnifierComponent.class)) {
+                usedMagnifier = true;
                 System.out.println("DEALER STOLE YOUR MAGNIFIER");
                 propSystem.dealerAdrenaline(MagnifierComponent.class);
                 magnifier();
             }
             //use player's handsaw
-            if (propSystem.playerHasProp(HandsawComponent.class) && (!shootSelfByBulletNumbers() || nextBall)) {
+            else if (propSystem.playerHasProp(HandsawComponent.class) && (!shootSelfByBulletNumbers() || nextBall)) {
                 System.out.println("DEALER STOLE YOUR HANDSAW");
                 propSystem.dealerAdrenaline(HandsawComponent.class);
                 System.out.println("DEALER USED HANDSAW");
                 propSystem.handsaw();
             }
             //use player's beer
-            if (propSystem.playerHasProp(BeerComponent.class) && (shootSelfByBulletNumbers() && !nextBall)) {
+            else if (propSystem.playerHasProp(BeerComponent.class) && (shootSelfByBulletNumbers() && !nextBall)) {
                 System.out.println("DEALER STOLE YOUR BEER");
                 propSystem.dealerAdrenaline(BeerComponent.class);
                 System.out.println("DEALER USED BEER");
                 propSystem.beer();
             }
             //use player's converter
-            if (propSystem.playerHasProp(ConverterComponent.class) && (shootSelfByBulletNumbers() || !nextBall)) {
+            else if (!ammoSystem.noBullet() && propSystem.dealerHasProp(ConverterComponent.class)
+                    && (shootSelfByBulletNumbers() || !nextBall)) {
                 System.out.println("DEALER STOLE YOUR CONVERTER");
                 propSystem.dealerAdrenaline(ConverterComponent.class);
                 System.out.println("DEALER USED CONVERTER");
@@ -91,24 +101,27 @@ public class DealerAI {
             propSystem.removeDealerProp(AdrenalineComponent.class);
         }
         //use magnifier to check the bullet; a ball directly makes him shoot the player
-        if (propSystem.dealerHasProp(MagnifierComponent.class)) {
+        if (!usedMagnifier && propSystem.dealerHasProp(MagnifierComponent.class)) {
             magnifier();
             propSystem.removeDealerProp(MagnifierComponent.class);
         }
         //use handsaw if he wants to shoot the player
-        if ((!shootSelfByBulletNumbers() || nextBall) && propSystem.dealerHasProp(HandsawComponent.class)) {
+        if (!ammoSystem.noBullet() && (!shootSelfByBulletNumbers() || nextBall)
+                && propSystem.dealerHasProp(HandsawComponent.class)) {
             System.out.println("DEALER USED HANDSAW");
             propSystem.handsaw();
             propSystem.removeDealerProp(HandsawComponent.class);
         }
         //use beer if he wants to shoot himself
-        while ((shootSelfByBulletNumbers() && !nextBall) && propSystem.dealerHasProp(BeerComponent.class)) {
+        while (!ammoSystem.noBullet() && (shootSelfByBulletNumbers() && !nextBall)
+                && propSystem.dealerHasProp(BeerComponent.class)) {
             System.out.println("DEALER USED BEER");
             propSystem.beer();
             propSystem.removeDealerProp(BeerComponent.class);
         }
         //use converter if he wants to shoot himself
-        if ((shootSelfByBulletNumbers() || !nextBall) && propSystem.dealerHasProp(ConverterComponent.class)) {
+        if (!ammoSystem.noBullet() && (shootSelfByBulletNumbers() && !nextBall)
+                && propSystem.dealerHasProp(ConverterComponent.class)) {
             System.out.println("DEALER USED CONVERTER");
             propSystem.converter();
             propSystem.removeDealerProp(ConverterComponent.class);
@@ -121,6 +134,9 @@ public class DealerAI {
         if (bullet instanceof BallComponent) {
             shootSelf = false;
             nextBall = true;
+        } else {
+            shootSelf = true;
+            nextBall = false;
         }
     }
 }
