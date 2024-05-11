@@ -32,14 +32,14 @@ public class DealerAI {
             propSystem.removeDealerProp(HandcuffComponent.class);
         }
         //use medicine if he is wounded and has no cigarette
-        if (personSystem.isWounded() && !propSystem.dealerHasProp(CigaretteComponent.class)
+        while (personSystem.isWounded() && !propSystem.dealerHasProp(CigaretteComponent.class)
                 && propSystem.dealerHasProp(MedicineComponent.class)) {
             System.out.println("DEALER USED MEDICINE");
             propSystem.medicine();
             propSystem.removeDealerProp(MedicineComponent.class);
         }
         //use cigarette if he is wounded
-        if (personSystem.isWounded() && propSystem.dealerHasProp(CigaretteComponent.class)) {
+        while (personSystem.isWounded() && propSystem.dealerHasProp(CigaretteComponent.class)) {
             System.out.println("DEALER USED CIGARETTE");
             propSystem.cigarette();
             propSystem.removeDealerProp(CigaretteComponent.class);
