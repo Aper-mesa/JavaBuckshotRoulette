@@ -3,6 +3,7 @@ package Systems;
 import Components.BallComponent;
 import Components.BlankComponent;
 import Components.Component;
+import Core.Engine;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,21 +14,20 @@ public class AmmoSystem extends ComponentSystem {
     private int blankAmount;
     Stack<Component> chamber = new Stack<>();
     Stack<Component> chamberDuplication = new Stack<>();
-    Engine engine;
     public int nextBulletIndex = 0;
 
-    public AmmoSystem(Engine engine, int totalAmount) {
-        this.engine = engine;
-        reload(totalAmount);
+    public AmmoSystem() {
+        reload();
     }
 
-    public void reload(int totalAmount) {
+    public void reload() {
+        int totalAmount = Engine.rand.nextInt(7) + 2;
         nextBulletIndex = 0;
         System.out.println("\t\t\t\u001B[31mSHOTGUN RELOADED\u001B[0m");
         //even bullets always have half balls and blanks
         //odd bullets have x/2 or x/2 + 1
         if (totalAmount % 2 == 0) ballAmount = totalAmount / 2;
-        else ballAmount = totalAmount / 2 + engine.rand.nextInt(2);
+        else ballAmount = totalAmount / 2 + Engine.rand.nextInt(2);
         blankAmount = totalAmount - ballAmount;
         chamber.clear();
         chamberDuplication.clear();

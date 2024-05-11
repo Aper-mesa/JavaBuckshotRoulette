@@ -1,69 +1,42 @@
 package Core;
 
-import Components.*;
-import Systems.*;
+import Components.BlankComponent;
+import Components.Component;
+import Components.HealthComponent;
 
 import java.lang.reflect.InvocationTargetException;
 
+import static Core.Engine.*;
+import static Systems.PersonSystem.*;
+
 public class JavaBuckshotRoulette {
-    int initialHealth;
-    String playerName;
-    AmmoSystem ammoSystem;
-    Entity dealer;
-    Entity player;
-    PersonSystem personSystem;
-    TurnSystem turnSystem = new TurnSystem();
-    RoundSystem roundSystem = new RoundSystem();
-    Engine engine = new Engine();
-    PropSystem propSystem;
-    ShotgunSystem shotgunSystem = new ShotgunSystem();
+    int initialHealth = 0;
+
+    public static void main(String[] args)
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        new JavaBuckshotRoulette();
+    }
 
     public JavaBuckshotRoulette()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-//        setPlayerName();
         addPeople();
         setInitialHealth();
+        System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
+        printChamber();
         personSystem.printHealth();
-        addEngine();
         play();
     }
 
-    private void addEngine() {
-        System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
-        int initialAmmo = engine.rand.nextInt(7) + 2;
-        ammoSystem = new AmmoSystem(engine, initialAmmo);
-        printChamber();
-        engine.addSystem(shotgunSystem);
-        engine.addSystem(roundSystem);
-        engine.addSystem(personSystem);
-        engine.addSystem(ammoSystem);
-        engine.addSystem(turnSystem);
-        propSystem = new PropSystem(engine);
-        engine.addSystem(propSystem);
-    }
-
     private void setInitialHealth() {
-        initialHealth = engine.rand.nextInt(3) + 2;
+        initialHealth = rand.nextInt(3) + 2;
         personSystem.setHealth(initialHealth);
     }
 
-    private void setPlayerName() {
-        System.out.println("ENTER YOUR NAME");
-        playerName = engine.input.nextLine().toUpperCase();
-    }
-
     private void addPeople() {
-        dealer = new Entity();
-        NameComponent dealerName = new NameComponent("DEALER");
-        dealer.addComponent(dealerName);
-        HealthComponent dealerHealth = new HealthComponent(initialHealth);
+        HealthComponent dealerHealth = new HealthComponent();
         dealer.addComponent(dealerHealth);
-        player = new Entity();
-        NameComponent playerName = new NameComponent(this.playerName);
-        player.addComponent(playerName);
-        HealthComponent playerHealth = new HealthComponent(initialHealth);
+        HealthComponent playerHealth = new HealthComponent();
         player.addComponent(playerHealth);
-        personSystem = new PersonSystem(engine, dealer, player, turnSystem);
     }
 
     private void printChamber() {
@@ -82,7 +55,7 @@ public class JavaBuckshotRoulette {
             }
             if (ammoSystem.noBullet()) {
                 System.out.println("\t\t\t--------------");
-                ammoSystem.reload(engine.rand.nextInt(7) + 2);
+                ammoSystem.reload();
                 propSystem.clearPhoneIndexes();
                 propSystem.spawnPropsInReload();
                 turnSystem.noHandcuff();
@@ -115,7 +88,7 @@ public class JavaBuckshotRoulette {
         roundSystem.nextRound();
         if (roundSystem.noMoreRound()) return;
         System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
-        ammoSystem.reload(engine.rand.nextInt(7) + 2);
+        ammoSystem.reload();
         propSystem.clearPhoneIndexes();
         turnSystem.playerTurn();
         setInitialHealth();
@@ -132,7 +105,7 @@ public class JavaBuckshotRoulette {
                 \t\t\tTYPE 1 TO SHOOT THE DEALER
                 \t\t\tTYPE 2 TO SHOOT YOURSELF
                 \t\t\tTYPE 3 TO USE PROPS""");
-        String command = engine.input.nextLine();
+        String command = input.nextLine();
         switch (command) {
             case "1" -> shootDealer();
             case "2" -> shootPlayer();
@@ -145,9 +118,8 @@ public class JavaBuckshotRoulette {
 
     private void dealerTurn() {
         System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
-        DealerAI ai = new DealerAI(engine);
-        ai.useProp();
-        if (!ammoSystem.noBullet() && ai.shootSelfByBulletNumbers() && !ai.nextBall) {
+        DealerAI.useProp();
+        if (!ammoSystem.noBullet() && DealerAI.shootSelfByBulletNumbers() && !DealerAI.nextBall) {
             System.out.println("DEALER SHOT HIMSELF");
             shootDealer();
         } else if (!ammoSystem.noBullet()) {
@@ -162,7 +134,7 @@ public class JavaBuckshotRoulette {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
             shotgunSystem.respawnBarrel();
-            printBlankBullet();
+            System.out.println("BLANK BULLET");
             if (turnSystem.isPlayerTurn()) {
                 turnSystem.dealerTurn();
                 turnSystem.noHandcuff();
@@ -183,7 +155,7 @@ public class JavaBuckshotRoulette {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
             shotgunSystem.respawnBarrel();
-            printBlankBullet();
+            System.out.println("BLANK BULLET");
             if (turnSystem.isDealerTurn()) {
                 turnSystem.playerTurn();
                 turnSystem.noHandcuff();
@@ -202,11 +174,7 @@ public class JavaBuckshotRoulette {
 
     private void useProps() {
         System.out.println("TYPE INDEX TO USE CORRESPONDING PROPS");
-        int choice = Integer.parseInt(engine.input.nextLine()) - 1;
+        int choice = Integer.parseInt(input.nextLine()) - 1;
         propSystem.usePropByIndex(choice, turnSystem);
-    }
-
-    private void printBlankBullet() {
-        System.out.println("BLANK BULLET");
     }
 }

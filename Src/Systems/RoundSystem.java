@@ -10,9 +10,7 @@ public class RoundSystem extends ComponentSystem {
     }
 
     public void nextRound() {
-//        if (round.getCurrentRound() < RoundComponent.MAX_ROUND) {
         round.currentRound = round.currentRound + 1;
-//        }
     }
 
     public boolean noMoreRound() {

@@ -2,11 +2,14 @@ package Systems;
 
 import Components.*;
 import Core.DealerAI;
+import Core.Engine;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static Core.Engine.*;
 
 public class PropSystem extends ComponentSystem {
     public ArrayList<Component> dealerProps = new ArrayList<>(8);
@@ -15,16 +18,8 @@ public class PropSystem extends ComponentSystem {
     ArrayList<Integer> userIndexes = new ArrayList<>();
     public ArrayList<Integer> dealerBallIndexes = new ArrayList<>();
     public ArrayList<Integer> dealerBlankIndexes = new ArrayList<>();
-    AmmoSystem ammoSystem;
-    TurnSystem turnSystem;
-    PersonSystem personSystem;
-    Engine engine;
 
-    public PropSystem(Engine engine) {
-        this.engine = engine;
-        ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
-        turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
-        personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
+    public PropSystem() {
         allPropsClasses.add(PhoneComponent.class);
         allPropsClasses.add(BeerComponent.class);
         allPropsClasses.add(CigaretteComponent.class);
@@ -66,7 +61,7 @@ public class PropSystem extends ComponentSystem {
         int totalAmount = ammoSystem.getTotalAmount();
         while (true) {
             if (userIndexes.isEmpty()) break;
-            index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            index = Engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
             if (userIndexes.contains(index)) {
                 continue;
             }
@@ -74,7 +69,7 @@ public class PropSystem extends ComponentSystem {
             break;
         }
         if (userIndexes.isEmpty()) {
-            index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            index = Engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
             userIndexes.add(index);
         }
         Component bullet = ammoSystem.checkBulletByPhone(index);
@@ -87,11 +82,11 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void dealerPhone() {
-        DealerAI ai = new DealerAI(engine);
+        DealerAI ai = new DealerAI();
         int index;
         int totalAmount = ammoSystem.getTotalAmount();
         while (true) {
-            index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            index = Engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
             if (dealerBallIndexes.contains(index) || dealerBlankIndexes.contains(index)) {
                 continue;
             }
@@ -120,13 +115,12 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void handsaw() {
-        ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
         shotgunSystem.sawBarrel();
     }
 
     public void adrenaline() {
         System.out.println("TYPE INDEX TO STEAL");
-        int choice = Integer.parseInt(engine.input.nextLine()) - 1;
+        int choice = Integer.parseInt(Engine.input.nextLine()) - 1;
         usePropByStealing(choice, turnSystem);
     }
 
@@ -140,7 +134,7 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void medicine() {
-        int chance = engine.rand.nextInt(2);
+        int chance = Engine.rand.nextInt(2);
         //chance==0 then damage, 1 then heal
         if (chance == 1) {
             personSystem.heal();
@@ -148,9 +142,9 @@ public class PropSystem extends ComponentSystem {
             return;
         }
         if (turnSystem.isPlayerTurn()) {
-            personSystem.harm(personSystem.player);
+            personSystem.harm(PersonSystem.player);
         } else {
-            personSystem.harm(personSystem.dealer);
+            personSystem.harm(PersonSystem.dealer);
         }
     }
 
@@ -218,7 +212,7 @@ public class PropSystem extends ComponentSystem {
 
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        int numberOfProps = engine.rand.nextInt(2, 6);
+        int numberOfProps = Engine.rand.nextInt(2, 6);
         for (int i = 0; i < numberOfProps; i++) {
             spawnProps();
         }
@@ -233,14 +227,15 @@ public class PropSystem extends ComponentSystem {
         }
     }
 
-    private void spawnProps() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private void spawnProps()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         Collections.shuffle(allPropsClasses);
-        Constructor<?> constructor = allPropsClasses.getFirst().getDeclaredConstructor();
+        Constructor<?> constructor = allPropsClasses.getFirst().getConstructor();
         if (dealerProps.size() < 8) {
             dealerProps.add((Component) constructor.newInstance());
         }
         Collections.shuffle(allPropsClasses);
-        constructor = allPropsClasses.getFirst().getDeclaredConstructor();
+        constructor = allPropsClasses.getFirst().getConstructor();
         if (playerProps.size() < 8) {
             playerProps.add((Component) constructor.newInstance());
         }

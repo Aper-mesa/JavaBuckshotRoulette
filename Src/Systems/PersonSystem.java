@@ -3,18 +3,11 @@ package Systems;
 import Components.Entity;
 import Components.HealthComponent;
 
-public class PersonSystem extends ComponentSystem {
-    Entity dealer;
-    public Entity player;
-    TurnSystem turnSystem;
-    Engine engine;
+import static Core.Engine.*;
 
-    public PersonSystem(Engine engine, Entity dealer, Entity player, TurnSystem turnSystem) {
-        this.dealer = dealer;
-        this.player = player;
-        this.turnSystem = turnSystem;
-        this.engine = engine;
-    }
+public class PersonSystem extends ComponentSystem {
+    public static Entity dealer = new Entity();
+    public static Entity player = new Entity();
 
     public void heal() {
         HealthComponent healthComponent = turnSystem.isPlayerTurn() ?
@@ -28,7 +21,6 @@ public class PersonSystem extends ComponentSystem {
         HealthComponent dealerHealth = (HealthComponent) person.getComponent(HealthComponent.class);
         if (dealerHealth.amount > 0)
             dealerHealth.amount = dealerHealth.amount - 1;
-        ShotgunSystem shotgunSystem = (ShotgunSystem) engine.getSystem(ShotgunSystem.class);
         if (shotgunSystem.isBarrelSawed() && dealerHealth.amount > 0) {
             dealerHealth.amount = dealerHealth.amount - 1;
             shotgunSystem.respawnBarrel();

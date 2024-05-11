@@ -1,37 +1,24 @@
 package Core;
 
 import Components.*;
-import Systems.*;
+
+import static Core.Engine.*;
 
 public class DealerAI {
-    Engine engine;
-    boolean shootSelf;
-    public boolean nextBall = false;
-    boolean usedMagnifier = false;
-    PropSystem propSystem;
-    PersonSystem personSystem;
-    TurnSystem turnSystem;
-    AmmoSystem ammoSystem;
+    static boolean shootSelf;
+    public static boolean nextBall = false;
+    static boolean usedMagnifier = false;
 
-    public DealerAI(Engine engine) {
-        this.engine = engine;
-        propSystem = (PropSystem) engine.getSystem(PropSystem.class);
-        personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
-        turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
-        ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
-    }
-
-    public boolean shootSelfByBulletNumbers() {
-        AmmoSystem ammoSystem = (AmmoSystem) engine.getSystem(AmmoSystem.class);
+    public static boolean shootSelfByBulletNumbers() {
         if (ammoSystem.equalBullets()) {
-            shootSelf = engine.rand.nextInt(2) == 1;
+            shootSelf = rand.nextInt(2) == 1;
             return shootSelf;
         }
         shootSelf = ammoSystem.moreBlanks();
         return shootSelf;
     }
 
-    public void useProp() {
+    public static void useProp() {
         usedMagnifier = false;
         nextBall = false;
         //handcuff has the highest priority
@@ -134,7 +121,7 @@ public class DealerAI {
         }
     }
 
-    private void magnifier() {
+    private static void magnifier() {
         System.out.println("DEALER USED MAGNIFIER");
         Component bullet = propSystem.magnifier();
         if (bullet instanceof BallComponent) {
