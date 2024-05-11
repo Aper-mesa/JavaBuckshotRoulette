@@ -77,8 +77,12 @@ public class AmmoSystem extends ComponentSystem {
         Component bullet = chamber.pop();
         if (bullet instanceof BlankComponent) {
             chamber.push(new BallComponent());
+            ballAmount++;
+            blankAmount--;
         } else {
             chamber.push(new BlankComponent());
+            ballAmount--;
+            blankAmount++;
         }
     }
 

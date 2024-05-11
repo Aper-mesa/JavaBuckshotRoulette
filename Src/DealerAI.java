@@ -1,8 +1,5 @@
 import Components.*;
-import Systems.AmmoSystem;
-import Systems.Engine;
-import Systems.PersonSystem;
-import Systems.PropSystem;
+import Systems.*;
 
 public class DealerAI {
     Engine engine;
@@ -22,8 +19,9 @@ public class DealerAI {
     public void useProp() {
         PropSystem propSystem = (PropSystem) engine.getSystem(PropSystem.class);
         PersonSystem personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
+        TurnSystem turnSystem = (TurnSystem) engine.getSystem(TurnSystem.class);
         //handcuff has the highest priority
-        if (propSystem.dealerHasProp(HandcuffComponent.class)) {
+        if (turnSystem.notHandcuffed() && propSystem.dealerHasProp(HandcuffComponent.class)) {
             System.out.println("DEALER USED HANDCUFF");
             propSystem.handcuff();
             propSystem.removeDealerProp(HandcuffComponent.class);
@@ -45,6 +43,7 @@ public class DealerAI {
         }
         //use handsaw if he wants to shoot the player
         if (!shootSelf() && propSystem.dealerHasProp(HandsawComponent.class)) {
+            System.out.println(shootSelf());
             System.out.println("DEALER USED HANDSAW");
             propSystem.handsaw();
             propSystem.removeDealerProp(HandsawComponent.class);
@@ -54,6 +53,12 @@ public class DealerAI {
             System.out.println("DEALER USED BEER");
             propSystem.beer();
             propSystem.removeDealerProp(BeerComponent.class);
+        }
+        //use converter if he wants to shoot himself
+        if (shootSelf() && propSystem.dealerHasProp(ConverterComponent.class)) {
+            System.out.println("DEALER USED CONVERTER");
+            propSystem.converter();
+            propSystem.removeDealerProp(ConverterComponent.class);
         }
     }
 }

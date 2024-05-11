@@ -121,6 +121,10 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void handcuff() {
+        //attempting to use an extra handcuff when a handcuff is in use results in wasting this extra handcuff
+        if (!turnSystem.notHandcuffed()) {
+            System.out.println("CANNOT USE MORE HANDCUFFS, PROP WASTED");
+        }
         turnSystem.handcuff();
     }
 
