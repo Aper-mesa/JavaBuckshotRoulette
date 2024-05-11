@@ -1,7 +1,4 @@
-import Components.CigaretteComponent;
-import Components.HandcuffComponent;
-import Components.HandsawComponent;
-import Components.MedicineComponent;
+import Components.*;
 import Systems.AmmoSystem;
 import Systems.Engine;
 import Systems.PersonSystem;
@@ -25,7 +22,7 @@ public class DealerAI {
     public void useProp() {
         PropSystem propSystem = (PropSystem) engine.getSystem(PropSystem.class);
         PersonSystem personSystem = (PersonSystem) engine.getSystem(PersonSystem.class);
-        //use handcuff if he has; handcuff has the highest priority
+        //handcuff has the highest priority
         if (propSystem.dealerHasProp(HandcuffComponent.class)) {
             System.out.println("DEALER USED HANDCUFF");
             propSystem.handcuff();
@@ -51,6 +48,12 @@ public class DealerAI {
             System.out.println("DEALER USED HANDSAW");
             propSystem.handsaw();
             propSystem.removeDealerProp(HandsawComponent.class);
+        }
+        //use beer if he wants to shoot himself
+        while (shootSelf() && propSystem.dealerHasProp(BeerComponent.class)) {
+            System.out.println("DEALER USED BEER");
+            propSystem.beer();
+            propSystem.removeDealerProp(BeerComponent.class);
         }
     }
 }
