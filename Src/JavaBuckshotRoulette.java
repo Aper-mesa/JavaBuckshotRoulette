@@ -83,6 +83,7 @@ public class JavaBuckshotRoulette {
                 ammoSystem.reload(engine.rand.nextInt(7) + 2);
                 propSystem.clearPhoneIndexes();
                 propSystem.spawnPropsInReload();
+                turnSystem.noHandcuff();
                 turnSystem.playerTurn();
                 personSystem.printHealth();
                 printChamber();

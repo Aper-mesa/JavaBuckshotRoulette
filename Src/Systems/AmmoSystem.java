@@ -21,7 +21,7 @@ public class AmmoSystem extends ComponentSystem {
     }
 
     public void reload(int totalAmount) {
-        System.out.println("\t\t\tSHOTGUN RELOADED");
+        System.out.println("\t\t\t\u001B[31mSHOTGUN RELOADED\u001B[0m");
         //even bullets always have half balls and blanks
         //odd bullets have x/2 or x/2 + 1
         if (totalAmount % 2 == 0) ballAmount = totalAmount / 2;

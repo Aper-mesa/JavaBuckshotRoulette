@@ -108,11 +108,15 @@ public class PropSystem extends ComponentSystem {
     public void medicine() {
         int chance = engine.rand.nextInt(2);
         //chance==0 then damage, 1 then heal
-        if (chance == 0) {
+        if (chance == 1) {
+            personSystem.heal();
+            personSystem.heal();
+            return;
+        }
+        if (turnSystem.isPlayerTurn()) {
             personSystem.harm(personSystem.player);
         } else {
-            personSystem.heal();
-            personSystem.heal();
+            personSystem.harm(personSystem.dealer);
         }
     }
 
@@ -176,9 +180,9 @@ public class PropSystem extends ComponentSystem {
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         int numberOfProps = engine.rand.nextInt(2, 6);
-            for (int i = 0; i < numberOfProps; i++) {
-                spawnProps();
-            }
+        for (int i = 0; i < numberOfProps; i++) {
+            spawnProps();
+        }
     }
 
     public void spawnPropsInReload()
