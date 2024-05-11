@@ -75,13 +75,10 @@ public class AmmoSystem extends ComponentSystem {
 
     public void convertCurrentBullet() {
         Component bullet = chamber.pop();
-        chamber.pop();
         if (bullet instanceof BlankComponent) {
             chamber.push(new BallComponent());
-            chamberDuplication.push(new BallComponent());
         } else {
             chamber.push(new BlankComponent());
-            chamberDuplication.push(new BlankComponent());
         }
     }
 
