@@ -1,6 +1,7 @@
 package Systems;
 
 import Components.*;
+import Core.DealerAI;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +12,9 @@ public class PropSystem extends ComponentSystem {
     public ArrayList<Component> dealerProps = new ArrayList<>(8);
     public ArrayList<Component> playerProps = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
-    ArrayList<Integer> usedIndexes = new ArrayList<>();
+    ArrayList<Integer> userIndexes = new ArrayList<>();
+    public ArrayList<Integer> dealerBallIndexes = new ArrayList<>();
+    public ArrayList<Integer> dealerBlankIndexes = new ArrayList<>();
     AmmoSystem ammoSystem;
     TurnSystem turnSystem;
     PersonSystem personSystem;
@@ -60,33 +63,56 @@ public class PropSystem extends ComponentSystem {
 
     public void phone() {
         int index = -1;
-        if (turnSystem.isPlayerTurn()) {
-            int totalAmount = ammoSystem.getTotalAmount();
-            while (true) {
-                if (usedIndexes.isEmpty()) break;
-                index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
-                if (usedIndexes.contains(index)) {
-                    continue;
-                }
-                usedIndexes.add(index);
-                break;
+        int totalAmount = ammoSystem.getTotalAmount();
+        while (true) {
+            if (userIndexes.isEmpty()) break;
+            index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            if (userIndexes.contains(index)) {
+                continue;
             }
-            if (usedIndexes.isEmpty()) {
-                index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
-                usedIndexes.add(index);
+            userIndexes.add(index);
+            break;
+        }
+        if (userIndexes.isEmpty()) {
+            index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            userIndexes.add(index);
+        }
+        Component bullet = ammoSystem.checkBulletByPhone(index);
+        System.out.print("NUMBER " + (index + 1) + " BULLET IS ");
+        if (bullet instanceof BlankComponent) {
+            System.out.println("BLANK");
+        } else {
+            System.out.println("BALL");
+        }
+    }
+
+    public void dealerPhone() {
+        DealerAI ai = new DealerAI(engine);
+        int index;
+        int totalAmount = ammoSystem.getTotalAmount();
+        while (true) {
+            index = engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
+            if (dealerBallIndexes.contains(index) || dealerBlankIndexes.contains(index)) {
+                continue;
             }
             Component bullet = ammoSystem.checkBulletByPhone(index);
-            System.out.print("NUMBER " + (index + 1) + " BULLET IS ");
             if (bullet instanceof BlankComponent) {
-                System.out.println("BLANK");
+                dealerBlankIndexes.add(index);
             } else {
-                System.out.println("BALL");
+                dealerBallIndexes.add(index);
             }
+            break;
+        }
+        if (dealerBallIndexes.contains(ammoSystem.nextBulletIndex)) {
+            ai.nextBall = true;
+        } else if (dealerBlankIndexes.contains(ammoSystem.nextBulletIndex)) {
+            ai.nextBall = false;
         }
     }
 
     public void clearPhoneIndexes() {
-        usedIndexes.clear();
+        userIndexes.clear();
+        dealerBallIndexes.clear();
     }
 
     public void converter() {
@@ -99,11 +125,9 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void adrenaline() {
-        if (turnSystem.isPlayerTurn()) {
-            System.out.println("TYPE INDEX TO STEAL");
-            int choice = Integer.parseInt(engine.input.nextLine()) - 1;
-            usePropByStealing(choice, turnSystem);
-        }
+        System.out.println("TYPE INDEX TO STEAL");
+        int choice = Integer.parseInt(engine.input.nextLine()) - 1;
+        usePropByStealing(choice, turnSystem);
     }
 
     public void dealerAdrenaline(Class<?> prop) {
@@ -194,8 +218,7 @@ public class PropSystem extends ComponentSystem {
 
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-//        int numberOfProps = engine.rand.nextInt(2, 6);
-        int numberOfProps = 8;
+        int numberOfProps = engine.rand.nextInt(2, 6);
         for (int i = 0; i < numberOfProps; i++) {
             spawnProps();
         }

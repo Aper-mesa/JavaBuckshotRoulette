@@ -14,6 +14,7 @@ public class AmmoSystem extends ComponentSystem {
     Stack<Component> chamber = new Stack<>();
     Stack<Component> chamberDuplication = new Stack<>();
     Engine engine;
+    public int nextBulletIndex = 0;
 
     public AmmoSystem(Engine engine, int totalAmount) {
         this.engine = engine;
@@ -21,6 +22,7 @@ public class AmmoSystem extends ComponentSystem {
     }
 
     public void reload(int totalAmount) {
+        nextBulletIndex = 0;
         System.out.println("\t\t\t\u001B[31mSHOTGUN RELOADED\u001B[0m");
         //even bullets always have half balls and blanks
         //odd bullets have x/2 or x/2 + 1
@@ -61,6 +63,7 @@ public class AmmoSystem extends ComponentSystem {
 
     public Component nextBullet() {
         Component bullet = chamber.pop();
+        nextBulletIndex++;
         if (bullet instanceof BallComponent) {
             ballAmount--;
         } else {
@@ -102,4 +105,7 @@ public class AmmoSystem extends ComponentSystem {
         return blankAmount == ballAmount;
     }
 
+    public boolean oneBullet() {
+        return getTotalAmount() == 1;
+    }
 }

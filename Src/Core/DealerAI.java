@@ -1,3 +1,5 @@
+package Core;
+
 import Components.*;
 import Systems.*;
 
@@ -80,14 +82,12 @@ public class DealerAI {
             else if (propSystem.playerHasProp(HandsawComponent.class) && (!shootSelfByBulletNumbers() || nextBall)) {
                 System.out.println("DEALER STOLE YOUR HANDSAW");
                 propSystem.dealerAdrenaline(HandsawComponent.class);
-                System.out.println("DEALER USED HANDSAW");
                 propSystem.handsaw();
             }
             //use player's beer
             else if (propSystem.playerHasProp(BeerComponent.class) && (shootSelfByBulletNumbers() && !nextBall)) {
                 System.out.println("DEALER STOLE YOUR BEER");
                 propSystem.dealerAdrenaline(BeerComponent.class);
-                System.out.println("DEALER USED BEER");
                 propSystem.beer();
             }
             //use player's converter
@@ -95,7 +95,6 @@ public class DealerAI {
                     && (shootSelfByBulletNumbers() || !nextBall)) {
                 System.out.println("DEALER STOLE YOUR CONVERTER");
                 propSystem.dealerAdrenaline(ConverterComponent.class);
-                System.out.println("DEALER USED CONVERTER");
                 propSystem.converter();
             }
             propSystem.removeDealerProp(AdrenalineComponent.class);
@@ -104,6 +103,13 @@ public class DealerAI {
         if (!usedMagnifier && propSystem.dealerHasProp(MagnifierComponent.class)) {
             magnifier();
             propSystem.removeDealerProp(MagnifierComponent.class);
+        }
+        //use phone
+        if (propSystem.dealerHasProp(PhoneComponent.class) && !ammoSystem.oneBullet()) {
+            System.out.println("DEALER USED PHONE");
+            propSystem.dealerPhone();
+            System.out.println("Blanks: " + propSystem.dealerBlankIndexes + "Balls: " + propSystem.dealerBallIndexes);
+            propSystem.removeDealerProp(PhoneComponent.class);
         }
         //use handsaw if he wants to shoot the player
         if (!ammoSystem.noBullet() && (!shootSelfByBulletNumbers() || nextBall)
