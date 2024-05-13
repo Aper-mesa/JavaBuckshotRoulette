@@ -88,6 +88,7 @@ public class PropSystem extends ComponentSystem {
         } else if (dealerBlankIndexes.contains(ammoSystem.nextBulletIndex)) {
             DealerAI.nextBall = false;
         }
+        propSystem.removeDealerProp(PhoneComponent.class);
     }
 
     public void clearPhoneIndexes() {
@@ -269,5 +270,15 @@ public class PropSystem extends ComponentSystem {
 
     public boolean playerNoProp() {
         return playerProps.isEmpty();
+    }
+
+    public boolean playerOnlyHealthProps() {
+        int number = 0;
+        for (Component playerProp : playerProps) {
+            if (playerProp instanceof CigaretteComponent || playerProp instanceof MedicineComponent) {
+                number++;
+            }
+        }
+        return number == playerProps.size();
     }
 }

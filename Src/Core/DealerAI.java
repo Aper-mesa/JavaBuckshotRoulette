@@ -43,7 +43,9 @@ public class DealerAI {
             }
         }
         //steal if he has adrenaline and player has props; the order is the same as the order of dealer uses his own
-        if (propSystem.dealerHasProp(AdrenalineComponent.class) && !propSystem.playerProps.isEmpty()) {
+        //if the dealer is healthy and the player only has health props, do not use adrenaline
+        if (propSystem.dealerHasProp(AdrenalineComponent.class) && !propSystem.playerProps.isEmpty()
+                && !(!personSystem.isWounded() && propSystem.playerOnlyHealthProps())) {
             System.out.println("大哥使用了肾上腺素");
             //use player's handcuff if the player is not handcuffed
             if (propSystem.playerHasProp(HandcuffComponent.class) && turnSystem.notHandcuffed()) {
@@ -56,7 +58,6 @@ public class DealerAI {
                 System.out.println("大哥偷了你的香烟");
                 propSystem.dealerAdrenaline(CigaretteComponent.class);
                 propSystem.cigarette();
-                return;
             }
             //use player's magnifier
             else if (propSystem.playerHasProp(MagnifierComponent.class)) {
@@ -64,6 +65,10 @@ public class DealerAI {
                 System.out.println("大哥偷了你的放大镜");
                 propSystem.dealerAdrenaline(MagnifierComponent.class);
                 magnifier();
+            } else if (propSystem.playerHasProp(PhoneComponent.class)) {
+                System.out.println("大哥偷了你的手机");
+                propSystem.dealerAdrenaline(PhoneComponent.class);
+                propSystem.dealerPhone();
             }
             //use player's handsaw
             else if (propSystem.playerHasProp(HandsawComponent.class) && (!shootSelfByBulletNumbers() || nextBall)) {
@@ -95,8 +100,6 @@ public class DealerAI {
         if (propSystem.dealerHasProp(PhoneComponent.class) && !ammoSystem.oneBullet()) {
             System.out.println("大哥用了手机");
             propSystem.dealerPhone();
-//            System.out.println("Blanks: " + propSystem.dealerBlankIndexes + "Balls: " + propSystem.dealerBallIndexes);
-            propSystem.removeDealerProp(PhoneComponent.class);
         }
         //use handsaw if he wants to shoot the player
         if (!ammoSystem.noBullet() && (!shootSelfByBulletNumbers() || nextBall)

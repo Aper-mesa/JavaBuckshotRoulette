@@ -22,7 +22,7 @@ public class JavaBuckshotRoulette {
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         addPeople();
         setInitialHealth();
-        System.out.println("-----第 " + roundSystem.getRound() + "回合-----");
+        System.out.println("-----第 " + roundSystem.getRound() + " 回合-----");
         printChamber();
         personSystem.printHealth();
         play();
@@ -43,7 +43,7 @@ public class JavaBuckshotRoulette {
     private void printChamber() {
         int blankAmmo = ammoSystem.getBlankAmount();
         int ballAmmo = ammoSystem.getBallAmount();
-        System.out.println("\t\t\t" + blankAmmo + " 实\t" + ballAmmo +" 空");
+        System.out.println("\t\t\t" + blankAmmo + " 实  " + ballAmmo +" 空");
     }
 
     private void play()
@@ -88,7 +88,7 @@ public class JavaBuckshotRoulette {
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         roundSystem.nextRound();
         if (roundSystem.noMoreRound()) return;
-        System.out.println("-----第 " + roundSystem.getRound() + "回合-----");
+        System.out.println("-----第 " + roundSystem.getRound() + " 回合-----");
         ammoSystem.reload();
         propSystem.clearPhoneIndexes();
         turnSystem.playerTurn();
@@ -102,7 +102,7 @@ public class JavaBuckshotRoulette {
     private void playerTurn() {
         propSystem.showProps();
         System.out.println("""
-                \t\t\t⚠️⚠️⚠️你的回合⚠️⚠️⚠️
+                \t\t\t⚠️你的回合⚠️
                 \t\t\t输 1 打大哥
                 \t\t\t输 2 打自己
                 \t\t\t输 3 用道具""");
@@ -118,7 +118,7 @@ public class JavaBuckshotRoulette {
     }
 
     private void dealerTurn() {
-        System.out.println("\t\t\t⚠️⚠️⚠️️️大哥回合⚠️⚠️⚠️");
+        System.out.println("\t\t\t⚠️️️大哥回合⚠️");
         DealerAI.useProp();
         if (!ammoSystem.noBullet() && DealerAI.shootSelfByBulletNumbers() && !DealerAI.nextBall) {
             System.out.println("大哥打他自己");
