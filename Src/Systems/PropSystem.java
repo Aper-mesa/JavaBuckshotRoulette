@@ -106,8 +106,20 @@ public class PropSystem extends ComponentSystem {
 
     public void adrenaline() {
         System.out.println("输入要偷的道具序号");
-        int choice = Integer.parseInt(Engine.input.nextLine()) - 1;
-        usePropByStealing(choice, turnSystem);
+        String inputString;
+        while (true) {
+            inputString = input.nextLine();
+            if (inputString.matches("[1-8]")) {
+                int choice = Integer.parseInt(inputString);
+                if (choice <= propSystem.dealerProps.size()) break;
+                else {
+                    System.out.println("重新输入");
+                }
+            } else {
+                System.out.println("重新输入");
+            }
+        }
+        usePropByStealing(Integer.parseInt(inputString) - 1, turnSystem);
     }
 
     public void dealerAdrenaline(Class<?> prop) {

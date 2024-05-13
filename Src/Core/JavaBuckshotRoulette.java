@@ -43,7 +43,7 @@ public class JavaBuckshotRoulette {
     private void printChamber() {
         int blankAmmo = ammoSystem.getBlankAmount();
         int ballAmmo = ammoSystem.getBallAmount();
-        System.out.println("\t\t\t" + blankAmmo + " 实  " + ballAmmo +" 空");
+        System.out.println("\t\t\t" + blankAmmo + " 实  " + ballAmmo + " 空");
     }
 
     private void play()
@@ -179,7 +179,19 @@ public class JavaBuckshotRoulette {
             return;
         }
         System.out.println("输入道具序号");
-        int choice = Integer.parseInt(input.nextLine()) - 1;
-        propSystem.usePropByIndex(choice, turnSystem);
+        String inputString;
+        while (true) {
+            inputString = input.nextLine();
+            if (inputString.matches("[1-8]")) {
+                int choice = Integer.parseInt(inputString);
+                if (choice <= propSystem.playerProps.size()) break;
+                else {
+                    System.out.println("重新输入");
+                }
+            } else {
+                System.out.println("重新输入");
+            }
+        }
+        propSystem.usePropByIndex(Integer.parseInt(inputString) - 1, turnSystem);
     }
 }
