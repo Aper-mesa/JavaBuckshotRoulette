@@ -1,6 +1,6 @@
 package Systems;
 
-import Components.Entity;
+import Core.Entity;
 import Components.HealthComponent;
 
 import static Core.Engine.*;
@@ -32,12 +32,12 @@ public class PersonSystem extends ComponentSystem {
         HealthComponent dealerHealth = (HealthComponent) dealer.getComponent(HealthComponent.class);
         int playerAmount = playerHealth.amount;
         int dealerAmount = dealerHealth.amount;
-        System.out.print("\t\t\tDEALER HEALTH:\t");
+        System.out.print("\t\t\t大哥血量：\t");
         for (int i = 0; i < dealerAmount; i++) {
             System.out.print("⬛");
         }
         System.out.println();
-        System.out.print("\t\t\tYOUR HEALTH:\t");
+        System.out.print("\t\t\t你的血量：\t");
         for (int i = 0; i < playerAmount; i++) {
             System.out.print("⬛");
         }

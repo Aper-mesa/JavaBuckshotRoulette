@@ -1,4 +1,6 @@
-package Components;
+package Core;
+
+import Components.Component;
 
 import java.util.ArrayList;
 

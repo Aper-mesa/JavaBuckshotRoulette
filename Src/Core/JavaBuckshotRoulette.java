@@ -7,7 +7,8 @@ import Components.HealthComponent;
 import java.lang.reflect.InvocationTargetException;
 
 import static Core.Engine.*;
-import static Systems.PersonSystem.*;
+import static Systems.PersonSystem.dealer;
+import static Systems.PersonSystem.player;
 
 public class JavaBuckshotRoulette {
     int initialHealth = 0;
@@ -21,7 +22,7 @@ public class JavaBuckshotRoulette {
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         addPeople();
         setInitialHealth();
-        System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
+        System.out.println("-----第 " + roundSystem.getRound() + "回合-----");
         printChamber();
         personSystem.printHealth();
         play();
@@ -42,7 +43,7 @@ public class JavaBuckshotRoulette {
     private void printChamber() {
         int blankAmmo = ammoSystem.getBlankAmount();
         int ballAmmo = ammoSystem.getBallAmount();
-        System.out.println("\t\t\tBLANK " + blankAmmo + "\t" + "BALL " + ballAmmo);
+        System.out.println("\t\t\t" + blankAmmo + " 实\t" + ballAmmo +" 空");
     }
 
     private void play()
@@ -50,7 +51,7 @@ public class JavaBuckshotRoulette {
         propSystem.spawnPropsInNewRound();
         while (true) {
             if (roundSystem.noMoreRound()) {
-                System.out.println("GAME OVER");
+                System.out.println("游戏结束");
                 System.exit(-1);
             }
             if (ammoSystem.noBullet()) {
@@ -75,10 +76,10 @@ public class JavaBuckshotRoulette {
             dealerTurn();
         }
         if (personSystem.isPlayerDead()) {
-            System.out.println("YOU ARE DEAD, YOU LOSE");
+            System.out.println("你死了，游戏结束");
             System.exit(-1);
         } else if (personSystem.isDealerDead()) {
-            System.out.println("DEALER IS DEAD, YOU WIN THE ROUND");
+            System.out.println("大哥死了，你赢了此回合");
             nextRound();
         }
     }
@@ -87,7 +88,7 @@ public class JavaBuckshotRoulette {
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         roundSystem.nextRound();
         if (roundSystem.noMoreRound()) return;
-        System.out.println("-----ROUND " + roundSystem.getRound() + "-----");
+        System.out.println("-----第 " + roundSystem.getRound() + "回合-----");
         ammoSystem.reload();
         propSystem.clearPhoneIndexes();
         turnSystem.playerTurn();
@@ -101,32 +102,32 @@ public class JavaBuckshotRoulette {
     private void playerTurn() {
         propSystem.showProps();
         System.out.println("""
-                \t\t\t⚠️⚠️⚠️YOUR TURN⚠️⚠️⚠️
-                \t\t\tTYPE 1 TO SHOOT THE DEALER
-                \t\t\tTYPE 2 TO SHOOT YOURSELF
-                \t\t\tTYPE 3 TO USE PROPS""");
+                \t\t\t⚠️⚠️⚠️你的回合⚠️⚠️⚠️
+                \t\t\t输 1 打大哥
+                \t\t\t输 2 打自己
+                \t\t\t输 3 用道具""");
         String command = input.nextLine();
         switch (command) {
             case "1" -> shootDealer();
             case "2" -> shootPlayer();
             case "3" -> useProps();
-            default -> System.out.println("INVALID COMMAND");
+            default -> System.out.println("无效指令");
         }
-        ammoSystem.cheat();
+        //ammoSystem.cheat();
         personSystem.printHealth();
     }
 
     private void dealerTurn() {
-        System.out.println("\t\t\t⚠️⚠️⚠️️️DEALER TURN⚠️⚠️⚠️");
+        System.out.println("\t\t\t⚠️⚠️⚠️️️大哥回合⚠️⚠️⚠️");
         DealerAI.useProp();
         if (!ammoSystem.noBullet() && DealerAI.shootSelfByBulletNumbers() && !DealerAI.nextBall) {
-            System.out.println("DEALER SHOT HIMSELF");
+            System.out.println("大哥打他自己");
             shootDealer();
         } else if (!ammoSystem.noBullet()) {
-            System.out.println("DEALER SHOT YOU");
+            System.out.println("大哥打你");
             shootPlayer();
         }
-        ammoSystem.cheat();
+        //ammoSystem.cheat();
         personSystem.printHealth();
     }
 
@@ -134,7 +135,7 @@ public class JavaBuckshotRoulette {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
             shotgunSystem.respawnBarrel();
-            System.out.println("BLANK BULLET");
+            System.out.println("空弹");
             if (turnSystem.isPlayerTurn()) {
                 turnSystem.dealerTurn();
                 turnSystem.noHandcuff();
@@ -155,7 +156,7 @@ public class JavaBuckshotRoulette {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
             shotgunSystem.respawnBarrel();
-            System.out.println("BLANK BULLET");
+            System.out.println("空弹");
             if (turnSystem.isDealerTurn()) {
                 turnSystem.playerTurn();
                 turnSystem.noHandcuff();
@@ -173,7 +174,11 @@ public class JavaBuckshotRoulette {
     }
 
     private void useProps() {
-        System.out.println("TYPE INDEX TO USE CORRESPONDING PROPS");
+        if (propSystem.playerNoProp()) {
+            System.out.println("你没有道具");
+            return;
+        }
+        System.out.println("输入道具序号");
         int choice = Integer.parseInt(input.nextLine()) - 1;
         propSystem.usePropByIndex(choice, turnSystem);
     }

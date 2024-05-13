@@ -32,12 +32,7 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void beer() {
-        Component bullet = ammoSystem.nextBullet();
-        if (bullet instanceof BlankComponent) {
-            System.out.println("BLANK");
-        } else {
-            System.out.println("BALL");
-        }
+        System.out.println(ammoSystem.nextBullet());
     }
 
     public void cigarette() {
@@ -47,11 +42,7 @@ public class PropSystem extends ComponentSystem {
     public Component magnifier() {
         Component bullet = ammoSystem.checkBullet();
         if (turnSystem.isPlayerTurn()) {
-            if (bullet instanceof BlankComponent) {
-                System.out.println("BLANK");
-            } else {
-                System.out.println("BALL");
-            }
+            System.out.println(bullet);
         }
         return bullet;
     }
@@ -73,16 +64,10 @@ public class PropSystem extends ComponentSystem {
             userIndexes.add(index);
         }
         Component bullet = ammoSystem.checkBulletByPhone(index);
-        System.out.print("NUMBER " + (index + 1) + " BULLET IS ");
-        if (bullet instanceof BlankComponent) {
-            System.out.println("BLANK");
-        } else {
-            System.out.println("BALL");
-        }
+        System.out.print("第 " + (index + 1) + " 发子弹是" + bullet);
     }
 
     public void dealerPhone() {
-        DealerAI ai = new DealerAI();
         int index;
         int totalAmount = ammoSystem.getTotalAmount();
         while (true) {
@@ -99,9 +84,9 @@ public class PropSystem extends ComponentSystem {
             break;
         }
         if (dealerBallIndexes.contains(ammoSystem.nextBulletIndex)) {
-            ai.nextBall = true;
+            DealerAI.nextBall = true;
         } else if (dealerBlankIndexes.contains(ammoSystem.nextBulletIndex)) {
-            ai.nextBall = false;
+            DealerAI.nextBall = false;
         }
     }
 
@@ -119,7 +104,7 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void adrenaline() {
-        System.out.println("TYPE INDEX TO STEAL");
+        System.out.println("输入要偷的道具序号");
         int choice = Integer.parseInt(Engine.input.nextLine()) - 1;
         usePropByStealing(choice, turnSystem);
     }
@@ -151,15 +136,15 @@ public class PropSystem extends ComponentSystem {
     public void handcuff() {
         //attempting to use an extra handcuff when a handcuff is in use results in wasting this extra handcuff
         if (!turnSystem.notHandcuffed()) {
-            System.out.println("CANNOT USE MORE HANDCUFFS, PROP WASTED");
+            System.out.println("不能重复使用手铐，该手铐报废");
             return;
         }
         turnSystem.handcuff();
     }
 
     public void showProps() {
-        System.out.println("DEALER PROPS" + dealerProps.toString());
-        System.out.println(" YOUR  PROPS" + playerProps.toString());
+        System.out.println("大哥道具" + dealerProps.toString());
+        System.out.println("你的道具" + playerProps.toString());
     }
 
     public void usePropByIndex(int index, TurnSystem turnSystem) {
@@ -176,7 +161,7 @@ public class PropSystem extends ComponentSystem {
         Component prop = turnSystem.isDealerTurn() ? playerProps.get(index) : dealerProps.get(index);
         if (prop instanceof AdrenalineComponent) {
             if (turnSystem.isPlayerTurn()) {
-                System.out.println("CANNOT STEAL ADRENALINE, PROP WASTED");
+                System.out.println("不能偷肾上腺素，道具报废");
             }
             return;
         }
@@ -280,5 +265,9 @@ public class PropSystem extends ComponentSystem {
                 return;
             }
         }
+    }
+
+    public boolean playerNoProp() {
+        return playerProps.isEmpty();
     }
 }

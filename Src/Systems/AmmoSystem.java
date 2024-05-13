@@ -23,7 +23,7 @@ public class AmmoSystem extends ComponentSystem {
     public void reload() {
         int totalAmount = Engine.rand.nextInt(7) + 2;
         nextBulletIndex = 0;
-        System.out.println("\t\t\t\u001B[31mSHOTGUN RELOADED\u001B[0m");
+        System.out.println("\t\t\t\u001B[31m重新装弹\u001B[0m");
         //even bullets always have half balls and blanks
         //odd bullets have x/2 or x/2 + 1
         if (totalAmount % 2 == 0) ballAmount = totalAmount / 2;
@@ -41,7 +41,7 @@ public class AmmoSystem extends ComponentSystem {
         for (int i = chamber.size() - 1; i >= 0; i--) {
             chamberDuplication.push(chamber.get(i));
         }
-        cheat();
+        //cheat();
     }
 
     //for testing only
