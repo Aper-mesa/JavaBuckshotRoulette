@@ -7,8 +7,8 @@ import Components.HealthComponent;
 import java.lang.reflect.InvocationTargetException;
 
 import static Core.Engine.*;
-import static Systems.PersonSystem.dealer;
-import static Systems.PersonSystem.player;
+import static Systems.PersonSystem.player1;
+import static Systems.PersonSystem.player2;
 
 public class JavaBuckshotRoulette {
     int initialHealth = 0;
@@ -35,9 +35,9 @@ public class JavaBuckshotRoulette {
 
     private void addPeople() {
         HealthComponent dealerHealth = new HealthComponent();
-        dealer.addComponent(dealerHealth);
+        player2.addComponent(dealerHealth);
         HealthComponent playerHealth = new HealthComponent();
-        player.addComponent(playerHealth);
+        player1.addComponent(playerHealth);
     }
 
     private void printChamber() {
@@ -60,7 +60,7 @@ public class JavaBuckshotRoulette {
                 propSystem.clearPhoneIndexes();
                 propSystem.spawnPropsInReload();
                 turnSystem.noHandcuff();
-                turnSystem.playerTurn();
+                turnSystem.player1Turn();
                 personSystem.printHealth();
                 printChamber();
             }
@@ -70,16 +70,16 @@ public class JavaBuckshotRoulette {
 
     private void inTurn()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        if (turnSystem.isPlayerTurn()) {
-            playerTurn();
+        if (turnSystem.isPlayer1Turn()) {
+            player1Turn();
         } else {
-            dealerTurn();
+            player2Turn();
         }
-        if (personSystem.isPlayerDead()) {
-            System.out.println("你死了，游戏结束");
-            System.exit(-1);
-        } else if (personSystem.isDealerDead()) {
-            System.out.println("大哥死了，你赢了此回合");
+        if (personSystem.isPlayer1Dead()) {
+            System.out.println("玩家1死了，玩家2赢了此回合");
+            nextRound();
+        } else if (personSystem.isPlayer2Dead()) {
+            System.out.println("玩家2死了，玩家1赢了此回合");
             nextRound();
         }
     }
@@ -91,7 +91,7 @@ public class JavaBuckshotRoulette {
         System.out.println("-----第 " + roundSystem.getRound() + " 回合-----");
         ammoSystem.reload();
         propSystem.clearPhoneIndexes();
-        turnSystem.playerTurn();
+        turnSystem.player1Turn();
         setInitialHealth();
         personSystem.printHealth();
         printChamber();
@@ -99,92 +99,97 @@ public class JavaBuckshotRoulette {
         propSystem.spawnPropsInNewRound();
     }
 
-    private void playerTurn() {
+    private void player1Turn() {
         propSystem.showProps();
         System.out.println("""
-                \t\t\t⚠️你的回合⚠️
-                \t\t\t输 1 打大哥
+                \t\t\t⚠️玩家1回合⚠️
+                \t\t\t输 1 打对面
                 \t\t\t输 2 打自己
                 \t\t\t输 3 用道具""");
         String command = input.nextLine();
         switch (command) {
-            case "1" -> shootDealer();
-            case "2" -> shootPlayer();
+            case "1" -> shootPlayer2();
+            case "2" -> shootPlayer1();
             case "3" -> useProps();
             default -> System.out.println("无效指令");
         }
-        //ammoSystem.cheat();
+        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
-    private void dealerTurn() {
-        System.out.println("\t\t\t⚠️️️大哥回合⚠️");
-        DealerAI.useProp();
-        if (!ammoSystem.noBullet() && DealerAI.shootSelfByBulletNumbers() && !DealerAI.nextBall) {
-            System.out.println("大哥打他自己");
-            shootDealer();
-        } else if (!ammoSystem.noBullet()) {
-            System.out.println("大哥打你");
-            shootPlayer();
+    private void player2Turn() {
+        propSystem.showProps();
+        System.out.println("""
+                \t\t\t😨玩家2回合😨
+                \t\t\t输 1 打对面
+                \t\t\t输 2 打自己
+                \t\t\t输 3 用道具""");
+        String command = input.nextLine();
+        switch (command) {
+            case "1" -> shootPlayer1();
+            case "2" -> shootPlayer2();
+            case "3" -> useProps();
+            default -> System.out.println("无效指令");
         }
-        //ammoSystem.cheat();
+        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
-    private void shootDealer() {
+    private void shootPlayer2() {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
             shotgunSystem.respawnBarrel();
             System.out.println("空弹");
-            if (turnSystem.isPlayerTurn()) {
-                turnSystem.dealerTurn();
+            if (turnSystem.isPlayer1Turn()) {
+                turnSystem.player2Turn();
                 turnSystem.noHandcuff();
             }
             return;
         }
         System.out.println("BOOM!");
-        personSystem.harm(dealer);
-        if (turnSystem.isPlayerTurn() && turnSystem.notHandcuffed()) {
-            turnSystem.dealerTurn();
+        personSystem.harm(player2);
+        if (turnSystem.isPlayer1Turn() && turnSystem.notHandcuffed()) {
+            turnSystem.player2Turn();
             return;
         }
         turnSystem.noHandcuff();
-        turnSystem.playerTurn();
+        turnSystem.player1Turn();
     }
 
-    private void shootPlayer() {
+    private void shootPlayer1() {
         Component nextBullet = ammoSystem.nextBullet();
         if (nextBullet instanceof BlankComponent) {
             shotgunSystem.respawnBarrel();
             System.out.println("空弹");
-            if (turnSystem.isDealerTurn()) {
-                turnSystem.playerTurn();
+            if (turnSystem.isPlayer2Turn()) {
+                turnSystem.player1Turn();
                 turnSystem.noHandcuff();
             }
             return;
         }
         System.out.println("BOOM!");
-        personSystem.harm(player);
-        if (turnSystem.isDealerTurn() && turnSystem.notHandcuffed()) {
-            turnSystem.playerTurn();
+        personSystem.harm(player1);
+        if (turnSystem.isPlayer2Turn() && turnSystem.notHandcuffed()) {
+            turnSystem.player1Turn();
             return;
         }
         turnSystem.noHandcuff();
-        turnSystem.dealerTurn();
+        turnSystem.player2Turn();
     }
 
     private void useProps() {
-        if (propSystem.playerNoProp()) {
-            System.out.println("你没有道具");
+        if (propSystem.noProp()) {
+            System.out.println("没有道具可以用");
             return;
         }
         System.out.println("输入道具序号");
         String inputString;
         while (true) {
+            int size = turnSystem.isPlayer1Turn() ? propSystem.player1Props.size() : propSystem.player2Props.size();
             inputString = input.nextLine();
             if (inputString.matches("[1-8]")) {
                 int choice = Integer.parseInt(inputString);
-                if (choice <= propSystem.playerProps.size()) break;
+                if (choice <= size) break;
                 else {
                     System.out.println("重新输入");
                 }
@@ -192,6 +197,6 @@ public class JavaBuckshotRoulette {
                 System.out.println("重新输入");
             }
         }
-        propSystem.usePropByIndex(Integer.parseInt(inputString) - 1, turnSystem);
+        propSystem.usePropByIndex(Integer.parseInt(inputString) - 1);
     }
 }

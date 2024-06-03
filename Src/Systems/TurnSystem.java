@@ -5,22 +5,22 @@ import Components.TurnComponent;
 public class TurnSystem extends ComponentSystem {
     TurnComponent turn = new TurnComponent();
 
-    public boolean isPlayerTurn() {
+    public boolean isPlayer1Turn() {
         return turn.isPlayerTurn;
     }
 
-    public boolean isDealerTurn() {
-        return !isPlayerTurn();
+    public boolean isPlayer2Turn() {
+        return !isPlayer1Turn();
     }
 
-    public void playerTurn() {
+    public void player1Turn() {
         if (turn.handcuffed) {
             return;
         }
         turn.isPlayerTurn = true;
     }
 
-    public void dealerTurn() {
+    public void player2Turn() {
         if (turn.handcuffed) {
             return;
         }
@@ -38,5 +38,4 @@ public class TurnSystem extends ComponentSystem {
     public boolean notHandcuffed() {
         return !turn.handcuffed;
     }
-
 }

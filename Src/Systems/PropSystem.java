@@ -1,7 +1,6 @@
 package Systems;
 
 import Components.*;
-import Core.DealerAI;
 import Core.Engine;
 
 import java.lang.reflect.Constructor;
@@ -12,12 +11,11 @@ import java.util.Collections;
 import static Core.Engine.*;
 
 public class PropSystem extends ComponentSystem {
-    public ArrayList<Component> dealerProps = new ArrayList<>(8);
-    public ArrayList<Component> playerProps = new ArrayList<>(8);
+    public ArrayList<Component> player2Props = new ArrayList<>(8);
+    public ArrayList<Component> player1Props = new ArrayList<>(8);
     ArrayList<Class<?>> allPropsClasses = new ArrayList<>();
-    ArrayList<Integer> userIndexes = new ArrayList<>();
-    public ArrayList<Integer> dealerBallIndexes = new ArrayList<>();
-    public ArrayList<Integer> dealerBlankIndexes = new ArrayList<>();
+    ArrayList<Integer> player1Indices = new ArrayList<>();
+    public ArrayList<Integer> player2Indexes = new ArrayList<>();
 
     public PropSystem() {
         allPropsClasses.add(PhoneComponent.class);
@@ -41,59 +39,34 @@ public class PropSystem extends ComponentSystem {
 
     public Component magnifier() {
         Component bullet = ammoSystem.checkBullet();
-        if (turnSystem.isPlayerTurn()) {
-            System.out.println(bullet);
-        }
+        System.out.println(bullet);
         return bullet;
     }
 
     public void phone() {
         int index = -1;
         int totalAmount = ammoSystem.getTotalAmount();
+        ArrayList<Integer> indices = turnSystem.isPlayer1Turn() ? player1Indices : player2Indexes;
         while (true) {
-            if (userIndexes.isEmpty()) break;
+            if (indices.isEmpty()) break;
             index = Engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
-            if (userIndexes.contains(index)) {
+            if (indices.contains(index)) {
                 continue;
             }
-            userIndexes.add(index);
+            indices.add(index);
             break;
         }
-        if (userIndexes.isEmpty()) {
+        if (indices.isEmpty()) {
             index = Engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
-            userIndexes.add(index);
+            indices.add(index);
         }
         Component bullet = ammoSystem.checkBulletByPhone(index);
         System.out.print("第 " + (index + 1) + " 发子弹是" + bullet);
     }
 
-    public void dealerPhone() {
-        int index;
-        int totalAmount = ammoSystem.getTotalAmount();
-        while (true) {
-            index = Engine.rand.nextInt((int) Math.floor(totalAmount / 2.0)) + (int) Math.floor(totalAmount / 2.0);
-            if (dealerBallIndexes.contains(index) || dealerBlankIndexes.contains(index)) {
-                continue;
-            }
-            Component bullet = ammoSystem.checkBulletByPhone(index);
-            if (bullet instanceof BlankComponent) {
-                dealerBlankIndexes.add(index);
-            } else {
-                dealerBallIndexes.add(index);
-            }
-            break;
-        }
-        if (dealerBallIndexes.contains(ammoSystem.nextBulletIndex)) {
-            DealerAI.nextBall = true;
-        } else if (dealerBlankIndexes.contains(ammoSystem.nextBulletIndex)) {
-            DealerAI.nextBall = false;
-        }
-        propSystem.removeDealerProp(PhoneComponent.class);
-    }
-
     public void clearPhoneIndexes() {
-        userIndexes.clear();
-        dealerBallIndexes.clear();
+        player1Indices.clear();
+        player2Indexes.clear();
     }
 
     public void converter() {
@@ -111,7 +84,7 @@ public class PropSystem extends ComponentSystem {
             inputString = input.nextLine();
             if (inputString.matches("[1-8]")) {
                 int choice = Integer.parseInt(inputString);
-                if (choice <= propSystem.dealerProps.size()) break;
+                if (choice <= propSystem.player2Props.size()) break;
                 else {
                     System.out.println("重新输入");
                 }
@@ -119,16 +92,7 @@ public class PropSystem extends ComponentSystem {
                 System.out.println("重新输入");
             }
         }
-        usePropByStealing(Integer.parseInt(inputString) - 1, turnSystem);
-    }
-
-    public void dealerAdrenaline(Class<?> prop) {
-        for (Component playerProp : playerProps) {
-            if (playerProp.getClass() == prop) {
-                removePlayerProp(prop);
-                return;
-            }
-        }
+        usePropByStealing(Integer.parseInt(inputString) - 1);
     }
 
     public void medicine() {
@@ -139,10 +103,10 @@ public class PropSystem extends ComponentSystem {
             personSystem.heal();
             return;
         }
-        if (turnSystem.isPlayerTurn()) {
-            personSystem.harm(PersonSystem.player);
+        if (turnSystem.isPlayer1Turn()) {
+            personSystem.harm(PersonSystem.player1);
         } else {
-            personSystem.harm(PersonSystem.dealer);
+            personSystem.harm(PersonSystem.player2);
         }
     }
 
@@ -156,32 +120,30 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void showProps() {
-        System.out.println("大哥道具" + dealerProps.toString());
-        System.out.println("你的道具" + playerProps.toString());
+        System.out.println("玩家2道具" + player2Props.toString());
+        System.out.println("玩家1道具" + player1Props.toString());
     }
 
-    public void usePropByIndex(int index, TurnSystem turnSystem) {
-        Component prop = turnSystem.isDealerTurn() ? dealerProps.get(index) : playerProps.get(index);
+    public void usePropByIndex(int index) {
+        Component prop = turnSystem.isPlayer2Turn() ? player2Props.get(index) : player1Props.get(index);
         useProp(prop);
-        if (turnSystem.isDealerTurn()) {
-            dealerProps.remove(index);
+        if (turnSystem.isPlayer2Turn()) {
+            player2Props.remove(index);
         } else {
-            playerProps.remove(index);
+            player1Props.remove(index);
         }
     }
 
-    public void usePropByStealing(int index, TurnSystem turnSystem) {
-        Component prop = turnSystem.isDealerTurn() ? playerProps.get(index) : dealerProps.get(index);
+    public void usePropByStealing(int index) {
+        Component prop = turnSystem.isPlayer2Turn() ? player1Props.get(index) : player2Props.get(index);
         if (prop instanceof AdrenalineComponent) {
-            if (turnSystem.isPlayerTurn()) {
-                System.out.println("不能偷肾上腺素，道具报废");
-            }
+            System.out.println("不能偷肾上腺素，道具报废");
             return;
         }
-        if (turnSystem.isDealerTurn()) {
-            playerProps.remove(index);
+        if (turnSystem.isPlayer2Turn()) {
+            player1Props.remove(index);
         } else {
-            dealerProps.remove(index);
+            player2Props.remove(index);
         }
         useProp(prop);
     }
@@ -218,7 +180,7 @@ public class PropSystem extends ComponentSystem {
 
     public void spawnPropsInReload()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        int propsNumberBeforeReload = dealerProps.size() + playerProps.size();
+        int propsNumberBeforeReload = player2Props.size() + player1Props.size();
         if (propsNumberBeforeReload == 8) return;
         for (int i = 0; i < 2; i++) {
             spawnProps();
@@ -229,68 +191,23 @@ public class PropSystem extends ComponentSystem {
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         Collections.shuffle(allPropsClasses);
         Constructor<?> constructor = allPropsClasses.getFirst().getConstructor();
-        if (dealerProps.size() < 8) {
-            dealerProps.add((Component) constructor.newInstance());
+        if (player2Props.size() < 8) {
+            player2Props.add((Component) constructor.newInstance());
         }
         Collections.shuffle(allPropsClasses);
         constructor = allPropsClasses.getFirst().getConstructor();
-        if (playerProps.size() < 8) {
-            playerProps.add((Component) constructor.newInstance());
+        if (player1Props.size() < 8) {
+            player1Props.add((Component) constructor.newInstance());
         }
     }
 
     public void clearProps() {
-        dealerProps.clear();
-        playerProps.clear();
+        player2Props.clear();
+        player1Props.clear();
     }
 
-    public boolean dealerHasProp(Class<? extends Component> prop) {
-        for (Component dealerProp : dealerProps) {
-            if (dealerProp.getClass() == prop) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean playerHasProp(Class<? extends Component> prop) {
-        for (Component dealerProp : playerProps) {
-            if (dealerProp.getClass() == prop) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void removeDealerProp(Class<? extends Component> prop) {
-        for (Component dealerProp : dealerProps) {
-            if (dealerProp.getClass() == prop) {
-                dealerProps.remove(dealerProp);
-                return;
-            }
-        }
-    }
-
-    public void removePlayerProp(Class<?> prop) {
-        for (Component dealerProp : playerProps) {
-            if (dealerProp.getClass() == prop) {
-                playerProps.remove(dealerProp);
-                return;
-            }
-        }
-    }
-
-    public boolean playerNoProp() {
-        return playerProps.isEmpty();
-    }
-
-    public boolean playerOnlyHealthProps() {
-        int number = 0;
-        for (Component playerProp : playerProps) {
-            if (playerProp instanceof CigaretteComponent || playerProp instanceof MedicineComponent) {
-                number++;
-            }
-        }
-        return number == playerProps.size();
+    public boolean noProp() {
+        ArrayList<Component> props = turnSystem.isPlayer2Turn() ? player2Props : player1Props;
+        return props.isEmpty();
     }
 }
