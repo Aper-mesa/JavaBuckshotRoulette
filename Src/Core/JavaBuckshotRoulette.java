@@ -43,7 +43,7 @@ public class JavaBuckshotRoulette {
     private void printChamber() {
         int blankAmmo = ammoSystem.getBlankAmount();
         int ballAmmo = ammoSystem.getBallAmount();
-        System.out.println("\t\t\t" + blankAmmo + " 实  " + ballAmmo + " 空");
+        System.out.println("\t\t\t" + blankAmmo + " 空  " + ballAmmo + " 实");
     }
 
     private void play()
@@ -113,7 +113,7 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("无效指令");
         }
-        ammoSystem.cheat();
+//        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
@@ -131,7 +131,7 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("无效指令");
         }
-        ammoSystem.cheat();
+//        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
