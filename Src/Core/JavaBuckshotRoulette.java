@@ -95,7 +95,8 @@ public class JavaBuckshotRoulette {
         System.out.println("-----第 " + roundSystem.getRound() + " 回合-----");
         ammoSystem.reload();
         propSystem.clearPhoneIndexes();
-        turnSystem.player1Turn();
+        if (personSystem.isPlayer1Dead()) turnSystem.player1Turn();
+        else turnSystem.player2Turn();
         setInitialHealth();
         personSystem.printHealth();
         printChamber();
