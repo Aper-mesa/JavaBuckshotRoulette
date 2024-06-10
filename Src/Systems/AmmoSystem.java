@@ -16,10 +16,6 @@ public class AmmoSystem extends ComponentSystem {
     Stack<Component> chamberDuplication = new Stack<>();
     public int nextBulletIndex = 0;
 
-    public AmmoSystem() {
-        reload();
-    }
-
     public void reload() {
         int totalAmount = Engine.rand.nextInt(7) + 2;
         nextBulletIndex = 0;

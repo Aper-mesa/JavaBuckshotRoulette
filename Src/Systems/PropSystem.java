@@ -119,8 +119,8 @@ public class PropSystem extends ComponentSystem {
     }
 
     public void showProps() {
-        System.out.println("玩家2道具" + player2Props.toString());
-        System.out.println("玩家1道具" + player1Props.toString());
+        System.out.println(personSystem.player2Name() + "道具" + player2Props.toString());
+        System.out.println(personSystem.player1Name() + "道具" + player1Props.toString());
     }
 
     public void usePropByIndex(int index) {
@@ -172,7 +172,7 @@ public class PropSystem extends ComponentSystem {
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         int numberOfProps = Engine.rand.nextInt(2, 6);
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < numberOfProps; i++) {
             spawnProps();
         }
     }

@@ -2,6 +2,8 @@ package Systems;
 
 import Components.TurnComponent;
 
+import static Core.Engine.personSystem;
+
 public class TurnSystem extends ComponentSystem {
     TurnComponent turn = new TurnComponent();
 
@@ -30,8 +32,8 @@ public class TurnSystem extends ComponentSystem {
     public void handcuff() {
         turn.handcuffed = true;
         if (turn.isPlayer1Turn) {
-            System.out.println("玩家2被铐住");
-        } else System.out.println("玩家1被铐住");
+            System.out.println(personSystem.player2Name() + "被铐住");
+        } else System.out.println(personSystem.player1Name() + "被铐住");
     }
 
     public void noHandcuff() {

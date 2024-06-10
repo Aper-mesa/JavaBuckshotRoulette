@@ -1,13 +1,34 @@
 package Systems;
 
-import Core.Entity;
 import Components.HealthComponent;
+import Components.NameComponent;
+import Core.Entity;
 
 import static Core.Engine.*;
 
 public class PersonSystem extends ComponentSystem {
     public static Entity player2 = new Entity();
     public static Entity player1 = new Entity();
+
+    public void setPlayer1Name(String name) {
+        NameComponent nameComponent = (NameComponent) player1.getComponent(NameComponent.class);
+        nameComponent.name = name;
+    }
+
+    public void setPlayer2Name(String name) {
+        NameComponent nameComponent = (NameComponent) player2.getComponent(NameComponent.class);
+        nameComponent.name = name;
+    }
+
+    public String player1Name() {
+        NameComponent nameComponent = (NameComponent) player1.getComponent(NameComponent.class);
+        return nameComponent.name;
+    }
+
+    public String player2Name() {
+        NameComponent nameComponent = (NameComponent) player2.getComponent(NameComponent.class);
+        return nameComponent.name;
+    }
 
     public void heal() {
         HealthComponent healthComponent = turnSystem.isPlayer1Turn() ?
@@ -32,12 +53,12 @@ public class PersonSystem extends ComponentSystem {
         HealthComponent dealerHealth = (HealthComponent) player2.getComponent(HealthComponent.class);
         int playerAmount = playerHealth.amount;
         int dealerAmount = dealerHealth.amount;
-        System.out.print("\t\t\t玩家2血量：");
+        System.out.print("\t\t\t" + personSystem.player2Name() + "血量：");
         for (int i = 0; i < dealerAmount; i++) {
             System.out.print("⬛");
         }
         System.out.println();
-        System.out.print("\t\t\t玩家1血量：");
+        System.out.print("\t\t\t" + personSystem.player1Name() + "血量：");
         for (int i = 0; i < playerAmount; i++) {
             System.out.print("⬛");
         }

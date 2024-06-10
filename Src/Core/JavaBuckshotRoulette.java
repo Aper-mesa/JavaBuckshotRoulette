@@ -3,6 +3,7 @@ package Core;
 import Components.BlankComponent;
 import Components.Component;
 import Components.HealthComponent;
+import Components.NameComponent;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -21,11 +22,19 @@ public class JavaBuckshotRoulette {
     public JavaBuckshotRoulette()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         addPeople();
+        setNames();
         setInitialHealth();
         System.out.println("-----第 " + roundSystem.getRound() + " 回合-----");
         printChamber();
         personSystem.printHealth();
         play();
+    }
+
+    public void setNames() {
+        System.out.println("玩家1输入姓名：");
+        personSystem.setPlayer1Name(input.nextLine());
+        System.out.println("玩家2输入姓名：");
+        personSystem.setPlayer2Name(input.nextLine());
     }
 
     private void setInitialHealth() {
@@ -34,10 +43,14 @@ public class JavaBuckshotRoulette {
     }
 
     private void addPeople() {
-        HealthComponent dealerHealth = new HealthComponent();
-        player2.addComponent(dealerHealth);
+        HealthComponent player2Health = new HealthComponent();
+        NameComponent player2Name = new NameComponent();
+        player2.addComponent(player2Health);
+        player2.addComponent(player2Name);
         HealthComponent playerHealth = new HealthComponent();
+        NameComponent player1Name = new NameComponent();
         player1.addComponent(playerHealth);
+        player1.addComponent(player1Name);
     }
 
     private void printChamber() {
@@ -54,6 +67,7 @@ public class JavaBuckshotRoulette {
         if (initTurn == 0) {
             turnSystem.player2Turn();
         }
+        ammoSystem.reload();
         while (true) {
             if (roundSystem.noMoreRound()) {
                 System.out.println("游戏结束");
@@ -80,10 +94,10 @@ public class JavaBuckshotRoulette {
             player2Turn();
         }
         if (personSystem.isPlayer1Dead()) {
-            System.out.println("玩家1死了，玩家2赢了此回合");
+            System.out.println(personSystem.player1Name() + "死了，" + personSystem.player2Name() + "赢了此回合");
             nextRound();
         } else if (personSystem.isPlayer2Dead()) {
-            System.out.println("玩家2死了，玩家1赢了此回合");
+            System.out.println(personSystem.player2Name() + "死了，" + personSystem.player1Name() + "赢了此回合");
             nextRound();
         }
     }
@@ -106,8 +120,8 @@ public class JavaBuckshotRoulette {
 
     private void player1Turn() {
         propSystem.showProps();
+        System.out.println("\t\t\t⚠️" + personSystem.player1Name() + "回合⚠️");
         System.out.println("""
-                \t\t\t⚠️玩家1回合⚠️
                 \t\t\t输 1 打对面
                 \t\t\t输 2 打自己
                 \t\t\t输 3 用道具""");
@@ -124,8 +138,8 @@ public class JavaBuckshotRoulette {
 
     private void player2Turn() {
         propSystem.showProps();
+        System.out.println("\t\t\t😨" + personSystem.player2Name() + "回合😨");
         System.out.println("""
-                \t\t\t😨玩家2回合😨
                 \t\t\t输 1 打对面
                 \t\t\t输 2 打自己
                 \t\t\t输 3 用道具""");
