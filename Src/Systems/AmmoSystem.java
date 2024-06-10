@@ -41,7 +41,7 @@ public class AmmoSystem extends ComponentSystem {
         for (int i = chamber.size() - 1; i >= 0; i--) {
             chamberDuplication.push(chamber.get(i));
         }
-//        cheat();
+        cheat();
     }
 
     //for testing only

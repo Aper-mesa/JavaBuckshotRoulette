@@ -37,10 +37,9 @@ public class PropSystem extends ComponentSystem {
         if (personSystem.isWounded()) personSystem.heal();
     }
 
-    public Component magnifier() {
+    public void magnifier() {
         Component bullet = ammoSystem.checkBullet();
         System.out.println(bullet);
-        return bullet;
     }
 
     public void phone() {
@@ -61,7 +60,7 @@ public class PropSystem extends ComponentSystem {
             indices.add(index);
         }
         Component bullet = ammoSystem.checkBulletByPhone(index);
-        System.out.print("第 " + (index + 1) + " 发子弹是" + bullet);
+        System.out.println("第 " + (index + 1) + " 发子弹是" + bullet);
     }
 
     public void clearPhoneIndexes() {
@@ -173,7 +172,7 @@ public class PropSystem extends ComponentSystem {
     public void spawnPropsInNewRound()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         int numberOfProps = Engine.rand.nextInt(2, 6);
-        for (int i = 0; i < numberOfProps; i++) {
+        for (int i = 0; i < 8; i++) {
             spawnProps();
         }
     }

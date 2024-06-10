@@ -6,7 +6,7 @@ public class TurnSystem extends ComponentSystem {
     TurnComponent turn = new TurnComponent();
 
     public boolean isPlayer1Turn() {
-        return turn.isPlayerTurn;
+        return turn.isPlayer1Turn;
     }
 
     public boolean isPlayer2Turn() {
@@ -17,18 +17,21 @@ public class TurnSystem extends ComponentSystem {
         if (turn.handcuffed) {
             return;
         }
-        turn.isPlayerTurn = true;
+        turn.isPlayer1Turn = true;
     }
 
     public void player2Turn() {
         if (turn.handcuffed) {
             return;
         }
-        turn.isPlayerTurn = false;
+        turn.isPlayer1Turn = false;
     }
 
     public void handcuff() {
         turn.handcuffed = true;
+        if (turn.isPlayer1Turn) {
+            System.out.println("玩家2被铐住");
+        } else System.out.println("玩家1被铐住");
     }
 
     public void noHandcuff() {

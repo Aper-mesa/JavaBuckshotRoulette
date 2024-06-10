@@ -1,6 +1,6 @@
 package Components;
 
 public class TurnComponent extends Component {
-    public boolean isPlayerTurn = true;
+    public boolean isPlayer1Turn = true;
     public boolean handcuffed = false;
 }

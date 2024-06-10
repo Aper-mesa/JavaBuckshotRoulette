@@ -49,6 +49,11 @@ public class JavaBuckshotRoulette {
     private void play()
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         propSystem.spawnPropsInNewRound();
+        //if this random number is 0 then player2 first; otherwise player1
+        int initTurn = rand.nextInt(2);
+        if (initTurn == 0) {
+            turnSystem.player2Turn();
+        }
         while (true) {
             if (roundSystem.noMoreRound()) {
                 System.out.println("游戏结束");
@@ -60,6 +65,7 @@ public class JavaBuckshotRoulette {
                 propSystem.clearPhoneIndexes();
                 propSystem.spawnPropsInReload();
                 turnSystem.noHandcuff();
+                //TODO修改换弹的回合轮换机制
                 turnSystem.player1Turn();
                 personSystem.printHealth();
                 printChamber();
@@ -113,7 +119,7 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("无效指令");
         }
-//        ammoSystem.cheat();
+        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
@@ -131,7 +137,7 @@ public class JavaBuckshotRoulette {
             case "3" -> useProps();
             default -> System.out.println("无效指令");
         }
-//        ammoSystem.cheat();
+        ammoSystem.cheat();
         personSystem.printHealth();
     }
 
@@ -152,8 +158,10 @@ public class JavaBuckshotRoulette {
             turnSystem.player2Turn();
             return;
         }
+        if (turnSystem.notHandcuffed()) {
+            turnSystem.player1Turn();
+        }
         turnSystem.noHandcuff();
-        turnSystem.player1Turn();
     }
 
     private void shootPlayer1() {
@@ -173,8 +181,10 @@ public class JavaBuckshotRoulette {
             turnSystem.player1Turn();
             return;
         }
+        if (turnSystem.notHandcuffed()) {
+            turnSystem.player2Turn();
+        }
         turnSystem.noHandcuff();
-        turnSystem.player2Turn();
     }
 
     private void useProps() {
