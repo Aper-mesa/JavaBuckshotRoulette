@@ -65,8 +65,6 @@ public class JavaBuckshotRoulette {
                 propSystem.clearPhoneIndexes();
                 propSystem.spawnPropsInReload();
                 turnSystem.noHandcuff();
-                //TODO修改换弹的回合轮换机制
-                turnSystem.player1Turn();
                 personSystem.printHealth();
                 printChamber();
             }
