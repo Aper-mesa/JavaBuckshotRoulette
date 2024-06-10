@@ -25,6 +25,7 @@ public class JavaBuckshotRoulette {
         setNames();
         setInitialHealth();
         System.out.println("-----第 " + roundSystem.getRound() + " 回合-----");
+        ammoSystem.reload();
         printChamber();
         personSystem.printHealth();
         play();
@@ -32,9 +33,9 @@ public class JavaBuckshotRoulette {
 
     public void setNames() {
         System.out.println("玩家1输入姓名：");
-        personSystem.setPlayer1Name(input.nextLine());
+        personSystem.setPlayer1Name(input.nextLine().toUpperCase());
         System.out.println("玩家2输入姓名：");
-        personSystem.setPlayer2Name(input.nextLine());
+        personSystem.setPlayer2Name(input.nextLine().toUpperCase());
     }
 
     private void setInitialHealth() {
@@ -67,7 +68,6 @@ public class JavaBuckshotRoulette {
         if (initTurn == 0) {
             turnSystem.player2Turn();
         }
-        ammoSystem.reload();
         while (true) {
             if (roundSystem.noMoreRound()) {
                 System.out.println("游戏结束");
@@ -120,7 +120,7 @@ public class JavaBuckshotRoulette {
 
     private void player1Turn() {
         propSystem.showProps();
-        System.out.println("\t\t\t⚠️" + personSystem.player1Name() + "回合⚠️");
+        System.out.println("\t\t\t\u001B[31m" + personSystem.player1Name() + "回合\u001B[0m");
         System.out.println("""
                 \t\t\t输 1 打对面
                 \t\t\t输 2 打自己
@@ -138,7 +138,7 @@ public class JavaBuckshotRoulette {
 
     private void player2Turn() {
         propSystem.showProps();
-        System.out.println("\t\t\t😨" + personSystem.player2Name() + "回合😨");
+        System.out.println("\t\t\t\u001B[31m" + personSystem.player2Name() + "回合\u001B[0m");
         System.out.println("""
                 \t\t\t输 1 打对面
                 \t\t\t输 2 打自己

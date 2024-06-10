@@ -32,8 +32,8 @@ public class TurnSystem extends ComponentSystem {
     public void handcuff() {
         turn.handcuffed = true;
         if (turn.isPlayer1Turn) {
-            System.out.println(personSystem.player2Name() + "被铐住");
-        } else System.out.println(personSystem.player1Name() + "被铐住");
+            System.out.println("\u001B[31m" + personSystem.player2Name() + "被铐住\u001B[0m");
+        } else System.out.println("\u001B[31m" + personSystem.player1Name() + "被铐住\u001B[0m");
     }
 
     public void noHandcuff() {
